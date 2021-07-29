@@ -9,6 +9,7 @@
 <title>ERPHERO</title>
 </head>
 <body>
+<%@ include file="common/nav.jsp" %>
 <div class="container my-3">
 	<h1>환영합니다.</h1>
 </div>

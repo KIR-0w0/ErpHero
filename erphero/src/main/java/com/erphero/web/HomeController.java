@@ -14,7 +14,7 @@ public class HomeController {
 	
 
 	
-	@GetMapping(path = {"/"})
+	@GetMapping(path = {"/", "/main", "/home"})
 	public String home(Model model) {
 		
 		logger.info("홈페이지 요청을 처리함"); //자바의 println
@@ -24,5 +24,10 @@ public class HomeController {
 		
 		return "home";	// 반환하는 값이 내부이동하는 경로이름이다.
 		// /WEB-INF/views/home.jsp 경로에서 "/WEB-INF/views/"와 ".jsp"를 제외한 이름
+	}
+	
+	@GetMapping("/login")
+	public String loginform() {
+		return "loginform";
 	}
 }
