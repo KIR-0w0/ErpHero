@@ -10,7 +10,7 @@
 </head>
 <body>
 <c:set var="menu" value="login" />
-<%@ include file="common/nav.jsp" %>
+<%@ include file="common/navclient.jsp" %>
 <div class="container my-3">
 	<main>
 		<div class="row mb-3">

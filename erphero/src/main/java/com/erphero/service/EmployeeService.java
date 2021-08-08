@@ -12,10 +12,10 @@ public interface EmployeeService {
 	
 	/**
 	 * 지정된 아이디와 비밀번호로 사원인증을 수행하는 서비스
-	 * @param id		사원 아이디
-	 * @param password	 사원 비밀번호
+	 * @param empId		사원 아이디
+	 * @param empPassword	 사원 비밀번호
 	 */
-	void login(String id, String password);
+	void login(String empId, String empPassword);
 	
 	
 }

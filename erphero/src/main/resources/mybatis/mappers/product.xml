@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.erphero.dao.ProductDao">
+	<select id="getAllSellProducts"  resultType="com.erphero.vo.Product">
+		select
+			product_code				as code,
+			product_name				as name,
+			product_type				as type,
+			product_category			as category,
+			product_status				as status,
+			product_stock_unit			as stockUnit,
+			product_stock_unit_amount	as stockUnitAmount,
+			product_stock				as stock,
+			product_default_amount		as defaultAmount,
+			product_safe_stock			as safeStock,
+			product_procure_type		as procureType,
+			product_price				as price,
+			product_root_code			as rootCode,
+			product_lead_time			as leadTime,
+			product_vender_code			as venderCode
+			
+		from 	hero_products
+		where 	product_type = '상품'
+	</select>
+</mapper>
