@@ -151,56 +151,64 @@ $(function() {
 			alert("구매하실 상품을 체크해주세요!")
 			return false;
 		} 
-		var isExistInvalidField = false;
-		var row = "";
-		var $tablebody = $("#table-products-form tbody");
-		var isExit = false;
-		var isExit2 = false;
-		var numTableProductAmount = "";
-		var modalProductAmout = "";
-		var $tableTds = "";
-		var $modalTds = "";
 		
-		if($tablebody.find("tr").length == 0){
-			$(":checkbox[name=productCode]:checked").each(function(index, checkbox) {
-				
-				
-				var $selectedTr = $(this).closest('tr');
+			$(":checkbox[name=productCode]:checked").each(function(index, modaltr) {
+				var isExist = false;
+				var $selectedModalTr = $(this).closest('tr');
+				console.log("$selectedModalTr", $selectedModalTr)
+				var $modalTds = $selectedModalTr.find('td');
 			
-				var $tds = $selectedTr.find('td');
-			
-				var code = $tds.eq(0).find('input').val();
-				var name = $tds.eq(1).text();
-				var price = $tds.eq(2).text();
-				var amount = $tds.eq(3).find('input').val();
-				var totalPrice = price * amount;
-				var priceFmt = new Number(price).toLocaleString();
-				var amountFmt = new Number(amount).toLocaleString();
-				var totalPriceFmt = new Number(totalPrice).toLocaleString();
+				var modalProductCode = $modalTds.eq(0).find('input').val();
+				var nummodalProductAmout = Number($modalTds.eq(3).find('input').val());
 				
-				if(amount <= 0) {
+				console.log("모달 상품코드: ",modalProductCode)
+				console.log("모달 상품수량:", nummodalProductAmout)
+				$("#table-products-form tbody tr").each(function(index, tabletr) {
+					var $selectedtableTr = $(this).closest('tr');
 					
-					isExistInvalidField = true;
-				} else {
-					console.log(code, name, price, amount);
+					var $tableTds = $selectedtableTr.find('td');
 					
-					row += '<tr data-add-product-code="'+code+'">'
-					row += '<td class="text-center"><input type="checkbox" id="add-product-code" value="'+code+'"/></td>'
-					row += '<td class="text-center">'+name+'</td>'
-					row += '<td class="text-center">'+priceFmt+'</td>'
-					row += '<td class="text-center"><input type="number" name="addListAmount" min="1" value="'+amountFmt+'"/></td>'
-					row += '<td class="text-center" id="add-product-total-price">'+totalPriceFmt+'</td>'
-					row += '</tr>'
+					var tableProductCode = $tableTds.eq(0).find('input').val();
+					var numTableProductAmount = Number($tableTds.eq(3).find('input').val());
+					
+					console.log("테이블 상품코드: ", tableProductCode)
+					console.log("테이블 상품수량:", numTableProductAmount)
+						if(tableProductCode == modalProductCode){
+							var sumProductAmount = numTableProductAmount + nummodalProductAmout;
+							
+							var updateTableProductAmout = $tableTds.eq(3).find('input').val(sumProductAmount);
+							var modalChangeSelected = $modalTds.find('input').eq(0).prop("checked", false); 
+							isExist = true;
+						} 
+				})
+				if(!isExist){	
+						
+					var code = $modalTds.eq(0).find('input').val();
+					var name = $modalTds.eq(1).text();
+					var price = $modalTds.eq(2).text();
+					var amount = $modalTds.eq(3).find('input').val();
+					var totalPrice = price * amount;
+					var priceFmt = new Number(price).toLocaleString();
+					var amountFmt = new Number(amount).toLocaleString();
+					var totalPriceFmt = new Number(totalPrice).toLocaleString();
+									
+						console.log(code, name, price, amount);
+							
+						var row = '<tr data-add-product-code="'+code+'">'
+						row += '<td class="text-center"><input type="checkbox" id="add-product-code" value="'+code+'"/></td>'
+						row += '<td class="text-center">'+name+'</td>'
+						row += '<td class="text-center">'+priceFmt+'</td>'
+						row += '<td class="text-center"><input type="number" name="addListAmount" min="0" value="'+amountFmt+'"/></td>'
+						row += '<td class="text-center" id="add-product-total-price">'+totalPriceFmt+'</td>'
+						row += '</tr>'
+						
+					
+					$("#table-products-form tbody").append(row);
 				}
 			});
-			if(isExistInvalidField){
-				alert("상품의 수량은 1개이상 선택해주세요")
-			} else {
-				$tablebody.append(row);
-				estimatesModal.hide();
-				
-				
-				var tfootRow =	'<tr>'
+			estimatesModal.hide();
+			
+			var tfootRow =	'<tr>'
 				tfootRow += '<th><button type="button" class="btn btn-outline-danger btn-sm" id="btn-checked-delete">선택 삭제</button></th>'
 				tfootRow +=	'<th></th>'
 				tfootRow += '<th></th>'
@@ -209,114 +217,11 @@ $(function() {
 				tfootRow += '</tr>'
 				$('#table-products-form tfoot').empty().append(tfootRow);
 				changeTotalAmount();
-			}
-		} else {
-			$("#table-products-form tbody tr").each(function(index, tabletr) {
-				var $selectedtableTr = $(this).closest('tr');
-				
-				$tableTds = $selectedtableTr.find('td');
-				
-				var tableProductCode = $tableTds.eq(0).find('input').val();
-				numTableProductAmount = Number($tableTds.eq(3).find('input').val());
-				
-				console.log("테이블 상품코드: ", tableProductCode)
-				console.log("테이블 상품수량:", numTableProductAmount)
-				
-				$(":checkbox[name=productCode]:checked").each(function(index, modaltr) {
-					var $selectedModalTr = $(this).closest('tr');
-					console.log("$selectedModalTr", $selectedModalTr)
-					$modalTds = $selectedModalTr.find('td');
-				
-					var modalProductCode = $modalTds.eq(0).find('input').val();
-					nummodalProductAmout = Number($modalTds.eq(3).find('input').val());
-					
-					console.log("모달 상품코드: ",modalProductCode)
-					console.log("모달 상품수량:", modalProductAmout)
-						if(tableProductCode == modalProductCode){
-							var sumProductAmount = numTableProductAmount + nummodalProductAmout;
-							
-							var updateTableProductAmout = $tableTds.eq(3).find('input').val(sumProductAmount);
-							var modalChangeSelected = $modalTds.find('input').eq(0).prop("checked", false); 
-							isExit = true;
-						}  
-				})
-			})
-			if(isExit){
-				if(isExistInvalidField){
-					alert("상품의 수량은 1개이상 선택해주세요")
-				}
-				
-				$(":checkbox[name=productCode]:checked").each(function(index, checkbox) {
-				var $selectedTr = $(this).closest('tr');
-				
-				var $tds = $selectedTr.find('td');
-					
-				var code = $tds.eq(0).find('input').val();
-				var name = $tds.eq(1).text();
-				var price = $tds.eq(2).text();
-				var amount = $tds.eq(3).find('input').val();
-				var totalPrice = price * amount;
-				var priceFmt = new Number(price).toLocaleString();
-				var amountFmt = new Number(amount).toLocaleString();
-				var totalPriceFmt = new Number(totalPrice).toLocaleString();
-								
-				if(amount <= 0) {
-						
-				isExistInvalidField = true;
-				} else {
-					console.log(code, name, price, amount);
-						
-					row += '<tr data-add-product-code="'+code+'">'
-					row += '<td class="text-center"><input type="checkbox" id="add-product-code" value="'+code+'"/></td>'
-					row += '<td class="text-center">'+name+'</td>'
-					row += '<td class="text-center">'+priceFmt+'</td>'
-					row += '<td class="text-center"><input type="number" name="addListAmount" min="0" value="'+amountFmt+'"/></td>'
-					row += '<td class="text-center" id="add-product-total-price">'+totalPriceFmt+'</td>'
-					row += '</tr>'
-				}
-				});
-			} else {
-				$(":checkbox[name=productCode]:checked").each(function(index, checkbox) {
-				var $selectedTr = $(this).closest('tr');
-				
-				var $tds = $selectedTr.find('td');
-					
-				var code = $tds.eq(0).find('input').val();
-				var name = $tds.eq(1).text();
-				var price = $tds.eq(2).text();
-				var amount = $tds.eq(3).find('input').val();
-				var totalPrice = price * amount;
-				var priceFmt = new Number(price).toLocaleString();
-				var amountFmt = new Number(amount).toLocaleString();
-				var totalPriceFmt = new Number(totalPrice).toLocaleString();
-								
-				if(amount <= 0) {
-						
-				isExistInvalidField = true;
-				} else {
-					console.log(code, name, price, amount);
-						
-					row += '<tr data-add-product-code="'+code+'">'
-					row += '<td class="text-center"><input type="checkbox" id="add-product-code" value="'+code+'"/></td>'
-					row += '<td class="text-center">'+name+'</td>'
-					row += '<td class="text-center">'+priceFmt+'</td>'
-					row += '<td class="text-center"><input type="number" name="addListAmount" min="0" value="'+amountFmt+'"/></td>'
-					row += '<td class="text-center" id="add-product-total-price">'+totalPriceFmt+'</td>'
-					row += '</tr>'
-				}
-				});
-			}
-			if(isExistInvalidField){
-				alert("상품의 수량은 1개이상 선택해주세요")
-			} else {
-				$tablebody.append(row);
-				estimatesModal.hide();
-			}  
-		}
 	})
+				
 	
-	// 삭제버튼 실행함수
-	$("#table-products-form tbody").on('click', '.btn-danger', function(){
+	// 선택 삭제 버튼 실행함수
+	$("#table-products-form tfoot").on('click', '.btn-outline-danger', function(){
 		var productNo = $(this).closest("tr").remove()
 	})
 	
@@ -354,8 +259,10 @@ $(function() {
 			$("#table-products-form tbody tr td").find('input').prop("checked", false);
 		}
 	})
+	// 선택삭제 버튼 클릭시 일어나는 함수
+
 	
-	// 총합변경 함수로 만들고 싶음
+	// 총합변경 함수
 	function changeTotalAmount(){
 		console.log("실행")
 		var result = 0;
@@ -371,6 +278,7 @@ $(function() {
 		})
 		$("#table-products-form tfoot tr th").eq(4).text(new Number(result).toLocaleString());
 	};
+	
 	
 })
 
