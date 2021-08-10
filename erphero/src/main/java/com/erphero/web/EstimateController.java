@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -19,14 +20,14 @@ import com.erphero.web.view.JsonView;
 
 @Controller
 @RequestMapping("/estimates")
-public class EstimatesController {
-	private static Logger logger = LogManager.getLogger(EstimatesController.class);
+public class EstimateController {
+	private static Logger logger = LogManager.getLogger(EstimateController.class);
 	
 	@Autowired ProductService ProductService;
 	@Autowired JsonView jsonView;
 	
 	@GetMapping()
-	public String estimatesform(Model model) {
+	public String estimatesForm(Model model) {
 		logger.info("견적등록폼 요청 처리");
 		
 		return "estimatesform";
@@ -37,5 +38,11 @@ public class EstimatesController {
 		List<Product> sellProductsList = ProductService.getAllSellProducts();
 		
 		return new ResponseEntity<>(sellProductsList,HttpStatus.OK); 
+	}
+	
+	@PostMapping("insertEstimates")
+	public String insertEstimate() {
+		logger.info("견적등록 insert요청");
+		return "clienthome";
 	}
 }

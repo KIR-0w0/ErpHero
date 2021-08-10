@@ -23,10 +23,22 @@
 		<div class="row mb-3">
 			<div class="col">
 				<div class="border p-2 bg-light" >
-					<form id="form-estimates">
+					<form id="form-estimates" method="POST" action="estimates/insertEstimates" >
 						<div class="mb-3">
 							<label class="form-label">고객명</label>
 							<input type="text" class="form-control" id="client-name" name="reqName" />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">사업자 번호</label>
+							<input type="text" class="form-control" id="client-name" name="reqBusinessNumber" />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">이메일</label>
+							<input type="text" class="form-control" id="client-name" name="reqEmail" />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">전화번호</label>
+							<input type="text" class="form-control" id="client-name" name="reqPhone" />
 						</div>
 						<div class="mb-3">
 							<label class="form-label">납기일</label>
@@ -48,19 +60,11 @@
 								<tbody>
 								</tbody>
 								<tfoot>
-									<!-- <tr>
-										<th></th>
-										<th></th>
-										<th></th>
-										<th></th>
-										<th class="text-center">주문 합계</th>
-										<th class="text-center">1000000</th>
-									</tr> -->
 								</tfoot>
 							</table>
 						</div>
 						<div class="d-flex justify-content-end">
-							<button type="button" class="btn btn-primary" id="btn-submit" >견적요청</button>
+							<button type="submit" class="btn btn-primary" id="btn-submit" >견적요청</button>
 						</div>
 					</form>
 				</div>
@@ -195,21 +199,19 @@ $(function() {
 						console.log(code, name, price, amount);
 							
 						var row = '<tr data-add-product-code="'+code+'">'
-						row += '<td class="text-center"><input type="checkbox" id="add-product-code" value="'+code+'"/></td>'
+						row += '<td class="text-center"><input type="checkbox" id="add-product-code" name="product-code"value="'+code+'" checked/></td>'
 						row += '<td class="text-center">'+name+'</td>'
 						row += '<td class="text-center">'+priceFmt+'</td>'
 						row += '<td class="text-center"><input type="number" name="addListAmount" min="0" value="'+amountFmt+'"/></td>'
 						row += '<td class="text-center" id="add-product-total-price">'+totalPriceFmt+'</td>'
 						row += '</tr>'
-						
-					
 					$("#table-products-form tbody").append(row);
 				}
 			});
 			estimatesModal.hide();
-			
+			$("#checkbox-toggle-form").prop("checked", true)
 			var tfootRow =	'<tr>'
-				tfootRow += '<th><button type="button" class="btn btn-outline-danger btn-sm" id="btn-checked-delete">선택 삭제</button></th>'
+				tfootRow += '<th class="text-center"><button type="button" class="btn btn-outline-danger btn-sm" id="btn-checked-delete">선택 삭제</button></th>'
 				tfootRow +=	'<th></th>'
 				tfootRow += '<th></th>'
 				tfootRow += '<th class="text-center">주문 합계</strong></th>'
@@ -218,13 +220,6 @@ $(function() {
 				$('#table-products-form tfoot').empty().append(tfootRow);
 				changeTotalAmount();
 	})
-				
-	
-	// 선택 삭제 버튼 실행함수
-	$("#table-products-form tfoot").on('click', '.btn-outline-danger', function(){
-		var productNo = $(this).closest("tr").remove()
-	})
-	
 	
 	// 수량변경이 있을때 실행되는 함수
 	$("#table-products-form tbody").on('change', ':input[name=addListAmount]', function (){
@@ -260,7 +255,19 @@ $(function() {
 		}
 	})
 	// 선택삭제 버튼 클릭시 일어나는 함수
-
+	$("#table-products-form tfoot").on('click', '.btn-outline-danger', function(){
+		$("#table-products-form tbody tr").each(function(index, tableTr) {
+			var $tableTds = $(tableTr).find('td');
+			
+			var $checkedTd = $tableTds.eq(0).find('input')
+			
+			if($checkedTd.prop('checked') == true) {
+				$checkedTd.closest('tr').remove()
+			}
+			changeTotalAmount();
+			$("#checkbox-toggle-form").prop("checked", false)
+		})
+	})
 	
 	// 총합변경 함수
 	function changeTotalAmount(){
@@ -278,8 +285,6 @@ $(function() {
 		})
 		$("#table-products-form tfoot tr th").eq(4).text(new Number(result).toLocaleString());
 	};
-	
-	
 })
 
 
