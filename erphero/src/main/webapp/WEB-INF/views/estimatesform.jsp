@@ -23,26 +23,30 @@
 		<div class="row mb-3">
 			<div class="col">
 				<div class="border p-2 bg-light" >
-					<form id="form-estimates" method="POST" action="estimates/insertEstimates" >
+					<form id="form-estimates" method="POST" action="estimateform/insertEstimates" >
 						<div class="mb-3">
-							<label class="form-label">고객명</label>
-							<input type="text" class="form-control" id="client-name" name="reqName" />
+							<label class="form-label">회사명</label>
+							<input type="text" class="form-control" id="client-name" name="venderName" />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">견적요청자</label>
+							<input type="text" class="form-control" id="client-name" name="name" />
 						</div>
 						<div class="mb-3">
 							<label class="form-label">사업자 번호</label>
-							<input type="text" class="form-control" id="client-name" name="reqBusinessNumber" />
+							<input type="text" class="form-control" id="client-name" name="businessNumber" />
 						</div>
 						<div class="mb-3">
 							<label class="form-label">이메일</label>
-							<input type="text" class="form-control" id="client-name" name="reqEmail" />
+							<input type="text" class="form-control" id="client-name" name="email" />
 						</div>
 						<div class="mb-3">
 							<label class="form-label">전화번호</label>
-							<input type="text" class="form-control" id="client-name" name="reqPhone" />
+							<input type="text" class="form-control" id="client-name" name="phone" />
 						</div>
 						<div class="mb-3">
 							<label class="form-label">납기일</label>
-							<input type="date" class="form-control" id="delivery-date" name="deleveryDate" />
+							<input type="date" class="form-control" id="delivery-date" name="deliveryDate" />
 						</div>
 						<div class="mb-5">
 							<label class="form-label me-2">상품</label>
@@ -50,7 +54,7 @@
 							<table class="table table-borderd" id="table-products-form">
 								<thead>
 									<tr>
-										<th class="text-center"><input type="checkbox" id="checkbox-toggle-form" ></th>
+										<th class="text-center"><input type="checkbox" id="checkbox-toggle-form"/></th>
 										<th class="text-center">상품명</th>
 										<th class="text-center">상품 가격</th>
 										<th class="text-center">수량</th>
@@ -115,7 +119,7 @@ $(function() {
 		var $tbody = $("#table-products-modal tbody").empty();
 		$.ajax({
 			type:"GET",
-			url:"/erphero/estimates/searchList",
+			url:"/erphero/estimateform/searchList",
 			dataType:'json'
 		})
 		.done(function makeRow(product){
@@ -199,10 +203,10 @@ $(function() {
 						console.log(code, name, price, amount);
 							
 						var row = '<tr data-add-product-code="'+code+'">'
-						row += '<td class="text-center"><input type="checkbox" id="add-product-code" name="product-code"value="'+code+'" checked/></td>'
+						row += '<td class="text-center"><input type="checkbox" id="add-product-code" name="productsCode"value="'+code+'" checked/></td>'
 						row += '<td class="text-center">'+name+'</td>'
 						row += '<td class="text-center">'+priceFmt+'</td>'
-						row += '<td class="text-center"><input type="number" name="addListAmount" min="0" value="'+amountFmt+'"/></td>'
+						row += '<td class="text-center"><input type="number" name="productsAmount" min="0" value="'+amountFmt+'"/></td>'
 						row += '<td class="text-center" id="add-product-total-price">'+totalPriceFmt+'</td>'
 						row += '</tr>'
 					$("#table-products-form tbody").append(row);
@@ -222,7 +226,7 @@ $(function() {
 	})
 	
 	// 수량변경이 있을때 실행되는 함수
-	$("#table-products-form tbody").on('change', ':input[name=addListAmount]', function (){
+	$("#table-products-form tbody").on('change', ':input[name=productsAmount]', function (){
 		
 		var $selectedTr = $(this).closest('tr');
 		
@@ -268,6 +272,8 @@ $(function() {
 			$("#checkbox-toggle-form").prop("checked", false)
 		})
 	})
+	
+	// 체크해제가 되었을때 총합의 가격 변동 함수 필요!!!!!!!!
 	
 	// 총합변경 함수
 	function changeTotalAmount(){

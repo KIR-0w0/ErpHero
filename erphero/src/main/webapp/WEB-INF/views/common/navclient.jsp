@@ -11,7 +11,7 @@
 					<a class="nav-link ${menu eq 'home' ? 'active fw-bold' : '' } "  href="/erphero/home">홈</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link ${menu eq 'estimates' ? 'active fw-bold' : '' }" href="/erphero/estimates">견적요청</a>
+					<a class="nav-link ${menu eq 'estimates' ? 'active fw-bold' : '' }" href="/erphero/estimateform">견적요청</a>
 				</li>
 			</ul>
 			<ul class="navbar-nav">

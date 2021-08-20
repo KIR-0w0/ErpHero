@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.erphero.dao.EstimateProductDao">
+	<insert id="insertEstimateProduct" parameterType="com.erphero.vo.EstimateProduct">
+	<selectKey keyProperty="no" resultType="long" order="BEFORE">
+		select HERO_ESTIMATE_PRODUCTS_SEQ.nextval as ep_no from dual
+	</selectKey>
+		insert into hero_estimate_products
+		(ep_no, ep_estimate_code, ep_product_code, ep_estimate_amount, ep_delivery_date)
+		values
+		(#{no}, #{estimateCode}, #{productCode}, #{estimateAmount}, #{deliveryDate})
+	</insert>
+</mapper>
