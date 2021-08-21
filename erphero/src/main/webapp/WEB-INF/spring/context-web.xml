@@ -7,7 +7,15 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
 	
-	<mvc:annotation-driven></mvc:annotation-driven>
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+			<!-- 
+				사용자 정의 HandlerMethodArgumentResolver를 등록함
+				요청핸들러의 매개변수에 @LoginedEmp 어노테이션이 지정되어 있을 때 실행되는 ArgumentResolver
+			 -->
+			<bean class="com.erphero.web.argumentResolver.LoginedEmpArgumentResolver"></bean>
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
 
 	<context:component-scan base-package="com.erphero.web"></context:component-scan>
 

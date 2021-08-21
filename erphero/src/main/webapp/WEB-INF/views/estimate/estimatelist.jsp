@@ -21,21 +21,23 @@
  			<div class="row mb-5">
  				<h1>견적등록</h1>
  			</div>
- 			<div class="row" style="margin-bottom: 80px">
+ 			<div class="row" style="margin-bottom: 20px">
 	 			<div class="col-10">
-	 				사업장
-	 				<input type="text" style="margin-left: 3px; margin-right: 5px;">
-	 				견적기간
-	 				<input type="date">
-	 				~
-	 				<input type="date">
+		 			견적기간 <input type="date"> ~ <input type="date" style="margin-right: 15px">
+		 			고객 <input type="text" style="margin-right: 15px">
+			 		<select name="condition">
+				 		<option value="productNo">품번</option>
+				 		<option value="productName">품명</option>
+			 		</select>
+		 			<input type="text">
 	 			</div>
 	 			<div class="col-2 d-flex justify-content-end" >
+	 				<input type="button" class="btn btn-primary" value="조회" style="margin-right: 10px;">
 	 				<input type="button" class="btn btn-primary" value="저장" style="margin-right: 10px;">
 	 				<input type="button" class="btn btn-danger" value="삭제" style="margin-right: 10px"> 
 	 			</div>
  			</div>
-	 		<div class="row" style="margin-bottom: 200px; margin-right: 10px">
+	 		<div class="row" style="margin-bottom: 100px; margin-right: 10px">
 	 			<table class="table table-borderd">
 	 				<!-- 견적테이블 -->
 	 				<thead class="table-dark">
@@ -45,6 +47,7 @@
 	 						<th class="text-center">견적일자</th>
 	 						<th class="text-center">고객</th>
 	 						<th class="text-center">담당자</th>
+	 						<th class="text-center">사업장</th>
 	 					</tr>
 	 				</thead>
 	 				<tbody>
@@ -54,12 +57,6 @@
 	 						<td class="text-center">ss</td>
 	 						<td class="text-center">dd</td>
 	 						<td class="text-center">11000</td>
-	 					</tr>
-	 					<tr>
-	 						<td class="text-center"><input type="checkbox" id="checkbox-estimate-toggle"/></td>
-	 						<td class="text-center">dd</td>
-	 						<td class="text-center">ss</td>
-	 						<td class="text-center">dd</td>
 	 						<td class="text-center">11000</td>
 	 					</tr>
 	 					<tr>
@@ -68,12 +65,6 @@
 	 						<td class="text-center">ss</td>
 	 						<td class="text-center">dd</td>
 	 						<td class="text-center">11000</td>
-	 					</tr>
-	 					<tr>
-	 						<td class="text-center"><input type="checkbox" id="checkbox-estimate-toggle"/></td>
-	 						<td class="text-center">dd</td>
-	 						<td class="text-center">ss</td>
-	 						<td class="text-center">dd</td>
 	 						<td class="text-center">11000</td>
 	 					</tr>
 	 					<tr>
@@ -82,12 +73,30 @@
 	 						<td class="text-center">ss</td>
 	 						<td class="text-center">dd</td>
 	 						<td class="text-center">11000</td>
+	 						<td class="text-center">11000</td>
 	 					</tr>
 	 					<tr>
 	 						<td class="text-center"><input type="checkbox" id="checkbox-estimate-toggle"/></td>
 	 						<td class="text-center">dd</td>
 	 						<td class="text-center">ss</td>
 	 						<td class="text-center">dd</td>
+	 						<td class="text-center">11000</td>
+	 						<td class="text-center">11000</td>
+	 					</tr>
+	 					<tr>
+	 						<td class="text-center"><input type="checkbox" id="checkbox-estimate-toggle"/></td>
+	 						<td class="text-center">dd</td>
+	 						<td class="text-center">ss</td>
+	 						<td class="text-center">dd</td>
+	 						<td class="text-center">11000</td>
+	 						<td class="text-center">11000</td>
+	 					</tr>
+	 					<tr>
+	 						<td class="text-center"><input type="checkbox" id="checkbox-estimate-toggle"/></td>
+	 						<td class="text-center">dd</td>
+	 						<td class="text-center">ss</td>
+	 						<td class="text-center">dd</td>
+	 						<td class="text-center">11000</td>
 	 						<td class="text-center">11000</td>
 	 					</tr>
 	 					<tr>

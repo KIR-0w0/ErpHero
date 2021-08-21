@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.erphero.service.EstimateService;
 import com.erphero.service.ProductService;
+import com.erphero.vo.Employee;
 import com.erphero.vo.Product;
 import com.erphero.vo.ReqEstimate;
+import com.erphero.web.annotaion.LoginedEmp;
 import com.erphero.web.view.JsonView;
 
 @Controller
@@ -36,8 +38,9 @@ public class EstimateController {
 	}
 	
 	@GetMapping("/estimate")
-	public String estimate() {
+	public String estimate(@LoginedEmp Employee employee) {
 		logger.info("견적페이지 요청");
+		logger.info("사용자 정보" + employee);
 		
 		return "estimate/estimatelist";
 	}

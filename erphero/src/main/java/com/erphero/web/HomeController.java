@@ -56,8 +56,6 @@ public class HomeController {
 	public String login(@RequestParam("id") String empId, @RequestParam("password") String empPassword) {
 		
 		logger.info("로그인 요청처리");
-		logger.info("id값 :" + empId);
-		logger.info("password값 :" + empPassword);
 		
 		employeeService.login(empId, empPassword);
 		

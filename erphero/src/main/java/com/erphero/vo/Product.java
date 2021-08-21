@@ -12,16 +12,16 @@ public class Product {
 	private String code;
 	private String name;
 	private String type;
-	private String category;
+	private String categoryCode;
 	private String status;
 	private String stockUnit;
-	private int stockUnitAmount;
-	private int stock;
-	private int defaultAmount;
-	private int safeStock;
+	private long stockUnitAmount;
+	private long stock;
+	private long defaultAmount;
+	private long safeStock;
 	private String procureType;
-	private int price;
+	private long price;
 	private String rootCode;
-	private int leadTime;
+	private long leadTime;
 	private String venderCode;
 }
