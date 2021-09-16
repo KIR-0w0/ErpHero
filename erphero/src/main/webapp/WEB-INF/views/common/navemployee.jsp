@@ -2,16 +2,18 @@
     pageEncoding="UTF-8"%>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="/erphero/employeehome">ERPHERO</a>
+		<a class="navbar-brand" href="/employeeMain" style="color: navy;"><strong>ERPHERO</strong></a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse d-flex justify-content-end" id="navbarNav">
-			<span class="navbar-text me-1"><small>사원이름: </small><strong>${LOGINED_EMPLOYEE.name }</strong></span>
-			<span class="navbar-text"><small>사원번호: </small><strong>${LOGINED_EMPLOYEE.code }</strong></span>
+			<button type="button" class="btn position-relative">
+			  <span class="badge bg-info">${LOGINED_EMPLOYEE.jobId }</span>
+			  <strong>${LOGINED_EMPLOYEE.name }</strong>
+			</button>
 			<ul class="navbar-nav">
 				<li class="navbar-itme">
-					<a class="nav-link" href="/erphero/logout">로그아웃</a>
+					<a class="nav-link" href="/logout" style="color: black;">로그아웃</a>
 				</li>
 			</ul>
 		</div>

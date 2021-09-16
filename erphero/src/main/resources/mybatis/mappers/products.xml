@@ -4,10 +4,10 @@
 <mapper namespace="com.erphero.dao.ProductDao">
 	<select id="getAllSellProducts"  resultType="com.erphero.vo.Product">
 		select
-			product_code				as code,
+			PRODUCT_CODE				as code,
 			product_name				as name,
 			product_type				as type,
-			product_category			as category,
+			product_category_code		as categoryCode,
 			product_status				as status,
 			product_stock_unit			as stockUnit,
 			product_stock_unit_amount	as stockUnitAmount,
@@ -20,7 +20,70 @@
 			product_lead_time			as leadTime,
 			product_vender_code			as venderCode
 			
-		from 	hero_products
-		where 	product_type = '상품'
+		from 	
+			hero_products
 	</select>
+	
+	<select id="getProductByCode"  resultType="com.erphero.vo.Product">
+		select
+			PRODUCT_CODE				as code,
+			product_name				as name,
+			product_type				as type,
+			product_category_code		as categoryCode,
+			product_status				as status,
+			product_stock_unit			as stockUnit,
+			product_stock_unit_amount	as stockUnitAmount,
+			product_stock				as stock,
+			product_default_amount		as defaultAmount,
+			product_safe_stock			as safeStock,
+			product_procure_type		as procureType,
+			product_price				as price,
+			product_root_code			as rootCode,
+			product_lead_time			as leadTime,
+			product_vender_code			as venderCode
+			
+		from 	
+			hero_products
+		where
+			product_code = #{code}	
+			
+	</select>
+	
+	<insert id="insertProduct" parameterType="com.erphero.vo.Product">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'PD' || to_char(sysdate, 'yy')|| lpad(HERO_PRODUCT_seq.nextval,4,0) as product_code from dual
+		</selectKey>
+		insert into hero_products
+		(
+			product_code, product_name, product_category_code, product_root_code, product_stock_unit, product_stock_unit_amount, product_stock,
+			product_default_amount, product_safe_stock, product_procure_type, product_price, product_lead_time, product_vender_code
+		)
+		values
+		(
+			#{code}, #{name}, #{categoryCode}, #{rootCode}, #{stockUnit}, #{stockUnitAmount}, #{stock}, #{defaultAmount}, #{safeStock}, #{procureType}, 
+			#{price}, #{leadTime}, #{venderCode} 
+		)
+	</insert>
+	
+	<update id="updateProduct" parameterType="com.erphero.vo.Product">
+		update
+			hero_products
+		set
+			product_name						= #{name},
+			product_type						= #{type},
+			product_category_code				= #{categoryCode},
+			product_status						= #{status},
+			product_stock_unit					= #{stockUnit},
+			product_stock_unit_amount			= #{stockUnitAmount},
+			product_stock						= #{stock},
+			product_default_amount				= #{defaultAmount},
+			product_safe_stock					= #{safeStock},
+			product_procure_type				= #{procureType},	
+			product_price						= #{price},
+			product_root_code					= #{rootCode},
+			product_lead_time					= #{leadTime}	
+		
+		where
+			product_code = #{code}	
+	</update>
 </mapper>

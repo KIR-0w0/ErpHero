@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erphero.dao.OrderProductDao">
+	
+	<select id="searchOrderProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.OrderProduct">
+		  select 
+		    c.charge_code       					chargeCode,
+		    c.charge_date							chargeDate,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+            b.product_price 						price,
+            f.required_orders_amount                requiredOrdersAmount,
+            f.required_date               			requiredDate,
+			c.charge_emp_code						empCode,
+			e.emp_name								empName,
+			d.cp_product_code   					productCode, 
+		    d.cp_unit           					unit,
+		    d.cp_amount         					amount,
+		    f.required_date     					deliveryDate,
+            g.vender_code                           venderCode,
+            g.vender_name              				venderName,
+            c.charge_writer_name					writerName
+			
+		from
+    		hero_products b, hero_charges c, hero_charge_products d, hero_employees e, hero_required_amount f, hero_venders g
+    
+		where 
+			b.product_code = d.cp_product_code
+		    and c.charge_code = d.cp_charge_code
+            and d.cp_vender_code = g.vender_code(+)
+		    and d.required_no = f.required_no
+		    and e.emp_code = c.charge_emp_code
+		    
+		    and c.charge_date is not null
+            and d.cp_procure_type = '구매'	
+			and c.charge_save_status = 'N'
+            and c.charge_status = 'Y'
+            <if test="startDate != null or endDate != null">
+				and (c.charge_date >= #{startDate} and c.charge_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<select id="getOrderProductsByProductCode" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.OrderProduct">
+		 select 
+		    c.charge_code       					chargeCode,
+		    c.charge_date							chargeDate,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+            b.product_price 						price,
+            f.required_orders_amount                requiredOrdersAmount,
+            f.required_date               			requiredDate,
+			c.charge_emp_code						empCode,
+			e.emp_name								empName,
+			d.cp_product_code   					productCode, 
+		    d.cp_unit           					unit,
+		    d.cp_amount         					amount,
+		    f.required_date     					deliveryDate,
+            g.vender_code                           venderCode,
+            g.vender_name              				venderName
+			
+		from
+    		hero_products b, hero_charges c, hero_charge_products d, hero_employees e, hero_required_amount f, hero_venders g
+    
+		where 
+			b.product_code = d.cp_product_code
+		    and c.charge_code = d.cp_charge_code
+            and d.cp_vender_code = g.vender_code(+)
+		    and d.required_no = f.required_no
+		    and e.emp_code = c.charge_emp_code
+		    
+		    and c.charge_date is not null
+            and d.cp_procure_type = '구매'	
+			and c.charge_save_status = 'N'
+            and c.charge_status = 'Y'
+            and d.charge_product_code = #{productCode}
+            
+	</select>
+	<select id="searchSavedOrderProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.OrderProduct">
+		select 
+		    a.no                                    no,
+		    a.op_order_code                         orderCode,
+		    a.op_product_code                       productCode,
+		    a.op_unit                               unit,
+		    a.op_amount                             amount,
+		    a.charge_code                           chargeCode, 
+		 	a.op_quantity                           quantity,
+		 	a.op_inbound_date 						inboundDate,
+			a.op_sum								sum,
+			a.op_delivery_date 						deliveryDate,
+            c.order_date                            "date",
+		    b.product_name 							productName,
+		 	b.product_price                         price
+		        
+		from 
+		    hero_order_products a, hero_products b, hero_orders c, hero_employees e
+		where 
+		    a.op_order_code = c.order_code
+		    and b.product_code = a.op_product_code
+            and c.order_emp_code = e.emp_code
+            and c.order_status = 'Y'
+			<if test="empWorkPlaceCode != null">
+				and e.emp_workplace_code = #{empWorkPlaceCode}
+			</if>
+			<if test="deptCode != null">
+				and e.emp_dept_code = #{deptCode}
+			</if>
+			<if test="empCode != null">
+				and e.emp_code = #{empCode}
+			</if>
+			<if test="startDate != null or endDate != null">
+				and (c.order_date >= #{startDate} and c.order_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<select id="getOrderProductsByOrderCode" resultType="com.erphero.vo.OrderProduct">
+		select 
+		    a.no                                    no,
+		    a.op_order_code                         orderCode,
+		    a.op_product_code                       productCode,
+		    a.op_unit                               unit,
+		    a.op_amount                             amount,
+		    a.charge_code                           chargeCode, 
+		 	a.op_quantity                           quantity,
+		 	a.op_inbound_date 						inboundDate,
+			a.op_sum								sum,
+			a.op_delivery_date 						deliveryDate,
+            c.order_date                            "date",
+		    b.product_name 							productName,
+		 	b.product_price                         price
+		        
+		from 
+		    hero_order_products a, hero_products b, hero_orders c, hero_employees e
+		where 
+		    a.op_order_code = c.order_code
+		    and b.product_code = a.op_product_code
+            and c.order_emp_code = e.emp_code
+            and c.order_status = 'Y'
+			and a.op_order_code = #{orderCode}
+	</select>
+
+	<select id="getOrderProductByNo" resultType="com.erphero.vo.OrderProduct">
+		select 
+		    a.no                                    no,
+		    a.op_order_code                         orderCode,
+		    a.op_product_code                       productCode,
+		    a.op_unit                               unit,
+		    a.op_amount                             amount,
+		    a.charge_code                           chargeCode, 
+		 	a.op_quantity                           quantity,
+		 	a.op_inbound_date 						inboundDate,
+			a.op_sum								sum,
+			a.op_delivery_date 						deliveryDate,
+            c.order_date                            "date",
+		    b.product_name 							productName,
+		 	b.product_price                         price
+		        
+		from 
+		    hero_order_products a, hero_products b, hero_orders c, hero_employees e
+		where 
+		    a.op_order_code = c.order_code
+		    and b.product_code = a.op_product_code
+            and c.order_emp_code = e.emp_code
+            and c.order_status = 'Y'
+			and a.no = #{no}
+	</select>
+	
+	<update id="updateOrderProduct">
+		update
+			hero_order_products
+		set
+			op_quantity			= #{quantity}
+		where
+			no = #{no}	
+	</update>
+	
+	<insert id="insertOrderProduct" parameterType="com.erphero.vo.OrderProduct">
+		<selectKey keyProperty="no" resultType="long" order="BEFORE">
+			select hero_order_products_seq.nextval no from dual
+		</selectKey>
+		insert into hero_order_products
+		(no, OP_ORDER_CODE, op_product_code, charge_code, op_quantity, op_inbound_date, op_sum, op_delivery_date)
+		values
+		(#{no}, #{orderCode}, #{productCode}, #{chargeCode}, #{quantity}, #{inboundDate}, #{sum}, #{deliveryDate})
+	</insert>
+	
+	<delete id="deleteOrderProductByOrderCode" parameterType="string">
+		delete from
+			hero_order_products
+		where
+			op_order_code = #{value}
+	</delete>
+	<delete id="deleteOrderProducts" parameterType="long">
+		delete from
+			hero_order_products
+		where
+			no = #{value}
+	</delete>
+
+</mapper>

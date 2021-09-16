@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.erphero.dao.ContractDao">
+
+	<insert id="insertContract" parameterType="com.erphero.vo.ParamContract">
+	<selectKey keyProperty="code" resultType="string" order="BEFORE">
+		select 'CN' || to_char(sysdate, 'yy')|| lpad(HERO_CONTRACT_seq.nextval,4,0) as contract_code from dual
+	</selectKey>
+	 insert into hero_contracts
+	 (contract_code, contract_date, contract_vender_code, contract_emp_code, contract_mgr_code )
+	 values
+	 (#{code}, #{contractDate}, #{venderCode}, #{empCode}, #{mgrCode})
+	</insert>
+	<select id="getContracts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Contract">
+		select
+		    cn.contract_code as code,
+		    cn.contract_date as contractDate,
+		    cn.contract_vender_code as venderCode,
+		    ve.vender_name as venderName,
+		    cn.contract_emp_code as empCode,
+		    e.emp_name as empName,
+		    cn.contract_mgr_code as mgrCode,
+		    (select
+                emp.emp_name
+                from hero_contracts cn, hero_employees emp
+                where
+                cn.contract_mgr_code = emp.emp_code)as mgrName,
+		    	cn.contract_status as status
+		from
+    		hero_contracts cn, hero_venders ve, hero_employees e
+    		
+		where
+			cn.contract_emp_code = e.emp_code
+		    and ve.vender_code = cn.contract_vender_code
+		    and cn.contract_status = 'N'
+		
+			<if test="empWorkPlaceCode != null">
+				e.emp_workplace_code = #{empWorkPlaceCode}
+			</if>
+			<if test="deptCode != null">
+				and e.emp_dept_code = #{deptCode}
+			</if>
+			<if test="empCode != null">
+				and cn.contract_emp_code = #{empCode}
+			</if>
+			<if test="startDate != null or endDate != null">
+				and (cn.contract_date >= #{startDate} and cn.contract_date &lt;= #{endDate})
+			</if>
+		    
+		
+		order by code desc
+	</select>
+	
+	<update id="updateSaveStatus">
+		update 
+			hero_contract_products
+		set
+			cp_save_status = #{saveStatus}
+		where 
+			no = #{no}
+	</update>
+	
+	<delete id="deleteContract" parameterType="string">
+		delete from hero_contracts
+		where
+			contract_code = #{values}
+	</delete>
+</mapper>

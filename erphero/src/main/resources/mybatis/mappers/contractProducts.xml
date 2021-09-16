@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.erphero.dao.ContractProductDao">
+	<insert id="insertContractProduct" parameterType="com.erphero.vo.ContractProduct">
+	<selectKey keyProperty="no" resultType="long" order="BEFORE">
+		select HERO_CONTRACT_PRODUCTS_SEQ.nextval as ep_no from dual
+	</selectKey>
+	insert into hero_contract_products
+		(no, cp_contract_code, cp_product_code, cp_contract_amount, cp_delivery_date, cp_ship_date, estimate_product_no)
+	values
+		(#{no}, #{cnCode}, #{prCode}, 
+			(select
+				ep_estimate_amount
+    			from hero_estimate_products
+    			where ep_no = #{esPrNo}), 
+    		(select
+				ep_delivery_date
+				from hero_estimate_products
+    			where ep_no = #{esPrNo}), #{shipDate}, #{esPrNo})
+	</insert>
+	
+	<select id="getContractProductByCode" parameterType="string" resultType="com.erphero.vo.ContractProduct">
+		select
+			cp.no,
+			cp.cp_contract_code as cnCode,
+			cp.cp_product_code as prCode,
+			cp.cp_contract_amount as amount,
+			cp.cp_delivery_date as deliveryDate,
+			cp.cp_ship_date as shipDate,
+			cp.estimate_product_no as esPrNo,
+			p.product_name as prName,
+			p.product_price as prPrice
+		from
+			hero_contract_products cp, hero_products p
+		where 
+			cp.cp_contract_code = #{values}
+			and cp.cp_product_code = p.product_code
+	</select>
+	
+	<select id="getContractProductByNo" parameterType="long" resultType="com.erphero.vo.ContractProduct">
+		select
+			cp.no,
+			cp.cp_contract_code as cnCode,
+			cp.cp_product_code as prCode,
+			cp.cp_contract_amount as amount,
+			cp.cp_delivery_date as deliveryDate,
+			cp.cp_ship_date as shipDate,
+			p.product_name as prName,
+			p.product_price as prPrice
+		from
+			hero_contract_products cp, hero_products p
+		where
+			cp.no = #{values}
+			and cp.cp_product_code = p.product_code
+	</select>
+	
+	<delete id="deleteContractProduct" parameterType="long">
+		delete from hero_contract_products
+		where
+			no = #{values}
+	</delete>
+	
+</mapper>

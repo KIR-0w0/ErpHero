@@ -1,13 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="com.erphero.dao.VenderDao">
+ <mapper namespace="com.erphero.dao.VenderDao">
+
+	<select id="searchVender" parameterType="string" resultType="com.erphero.vo.Vender">
+		select
+			a.vender_code					code,
+			a.vender_name					name,
+			a.vender_reg_num				regNum,
+			a.vender_rep_name				repName,
+			nvl(a.vender_address, '음')		address,
+            b.no							locationNo,
+			nvl(b.location_name, '없')		locationName
+		from
+		    hero_venders a, hero_locations b
+		where 
+			a.location_no = b.no(+)
+			and vender_name like '%' || #{value} || '%'
+		order by vender_code desc
+	</select>
 	
+	<select id="getAllVender" resultType="com.erphero.vo.Vender">
+		select
+			a.vender_code			code,
+			a.vender_name			name,
+			a.vender_reg_num		regNum,
+			a.vender_rep_name		repName,
+			nvl(a.vender_address, '음')		address,
+            b.no							locationNo,
+			nvl(b.location_name, '없')		locationName
+		from
+		    hero_venders a, hero_locations b
+		where 
+			a.location_no = b.no(+)
+		order by vender_code desc
+	</select>
+	
+	<select id="getVenderByCode" parameterType="string" resultType="com.erphero.vo.Vender">
+		select
+			a.vender_code			code,
+			a.vender_name			name,
+			a.vender_reg_num		regNum,
+			a.vender_rep_name		repName,
+			a.vender_address		address,
+			b.no					locationNo,
+			b.location_name			locationName
+		from
+		    hero_venders a, hero_locations b
+		where 
+			a.location_no(+) = b.no
+			and a.vender_code = #{value}
+		order by vender_code desc
+	</select>
+
 	<insert id="insertVender" parameterType="com.erphero.vo.Vender">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'VE' || to_char(sysdate, 'yy')|| lpad(HERO_VENDER_seq.nextval,4,0) as vender_code from dual
+		</selectKey>
+		insert into hero_venders
+		(	VENDER_NAME,
+			VENDER_CODE,
+			VENDER_REP_NAME,
+			VENDER_REG_NUM,
+			VENDER_BUSINESS_TYPE,
+			VENDER_BUSINESS_CATEGORY,
+			location_no,
+			VENDER_ADDRESS,
+			VENDER_EMAIL,
+			VENDER_PHONE,
+			VENDER_TYPE,
+			VENDER_GRADE,
+			VENDER_STATUS
+		)
+		values
+		(	#{name}, 
+			#{code},
+			#{repName},
+			#{regNum},
+			#{businessType},
+			#{businessCategory},
+			#{locationNo},
+			#{address},
+			#{email},
+			#{phone},
+			#{type},
+			#{grade},
+			#{status}
+		)
+		
+	</insert>
+	
+	<delete id="deleteVenderByCode" parameterType="string">
+		delete from 
+					 hero_venders
+		where 
+				vender_code = #{value}
+	</delete>
+	
+	<insert id="insertVenderEstimating" parameterType="com.erphero.vo.Vender">
 		insert into hero_venders
 		(vender_name, vender_code, vender_reg_num, vender_email, vender_phone)
 		values
-		(#{name}, 'VE' || to_char(sysdate, 'yy')|| lpad(HERO_VENDER_seq.nextval,4,0), #{regNum}, #{mail}, #{phone})
+		(#{name}, 'VE' || to_char(sysdate, 'yy')|| lpad(HERO_VENDER_seq.nextval,4,0), #{regNum}, #{email}, #{phone})
 	</insert>
 	
 	
@@ -16,7 +110,5 @@
 			vender_code	as code
 		from hero_venders
 		where vender_reg_num = #{value}
-	</select> 
-	
-	
+	</select>
 </mapper>

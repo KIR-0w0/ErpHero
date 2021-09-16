@@ -7,15 +7,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
 	
-	<mvc:annotation-driven>
-		<mvc:argument-resolvers>
-			<!-- 
-				사용자 정의 HandlerMethodArgumentResolver를 등록함
-				요청핸들러의 매개변수에 @LoginedEmp 어노테이션이 지정되어 있을 때 실행되는 ArgumentResolver
-			 -->
-			<bean class="com.erphero.web.argumentResolver.LoginedEmpArgumentResolver"></bean>
-		</mvc:argument-resolvers>
-	</mvc:annotation-driven>
+	<mvc:annotation-driven></mvc:annotation-driven>
 
 	<context:component-scan base-package="com.erphero.web"></context:component-scan>
 
@@ -23,4 +15,16 @@
 	<mvc:view-resolvers>
 		<mvc:jsp prefix="/WEB-INF/views/" suffix=".jsp"/>
 	</mvc:view-resolvers>
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/resources/**"/>
+			<mvc:exclude-mapping path="/estimateform/**"/>
+			<mvc:exclude-mapping path="/home"/>
+			<mvc:exclude-mapping path="/"/>
+			<mvc:exclude-mapping path="/login"/>
+			<bean class="com.erphero.web.interceptor.LoginCheckInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
 </beans>

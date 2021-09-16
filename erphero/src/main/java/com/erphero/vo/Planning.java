@@ -2,7 +2,10 @@ package com.erphero.vo;
 
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,28 +18,31 @@ public class Planning {
 	private String code;
 	private String contractCode;
 	private String empCode;
-	private long amount; //계획수량
 	
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date startDate;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date endDate; 
 	private String empWorkPlaceCode;
 	private String deptCode;
 	
-	private Date targetDate;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private Date targetDate; //계획일
 	private String productCode; //상품코드
 	private String productName;
 	private String productStockUnit;
-	private Date cpDeliveryDate;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date cpShipDate;
-	private long cpContractAmount;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private Date cpDeliveryDate;
+	private long cpContractAmount; //계획수량
 	private String venderName;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date madeDate;
+	private long contractProductNo;
 	
 	public Planning() {
 	}
-	
-	public Planning(String code, String contractCode, Date targetDate, String productCode, long amount) {
-	}
 
-	
 	
 }

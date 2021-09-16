@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erphero.dao.ChargeDao">
+
+	<select id="searchSavedCharges" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Charge" >
+		select      
+			distinct
+            a.charge_code                           code,
+            a.charge_emp_code                       empCode, 
+            a.charge_date                           "date",
+            a.charge_writer_name					writerName
+				
+		from 
+			hero_charges a, hero_charge_products c, hero_employees e, hero_required_amount f
+		where 
+            a.charge_code = c.cp_charge_code
+            and f.required_no = c.required_no
+            and a.charge_status = 'Y'
+			
+		<if test="empWorkPlaceCode != null">
+			and e.emp_workplace_code = #{empWorkPlaceCode}
+		</if>
+		<if test="deptCode != null">
+			and e.emp_dept_code = #{deptCode}
+		</if>
+		<if test="empCode != null">
+			and e.emp_code = #{empCode}
+		</if>
+		<if test="startDate != null or endDate != null">
+			and (f.required_date >= #{startDate} and f.required_date &lt;= #{endDate})
+		</if>
+		order by code desc
+	</select>
+	
+	<select id="getChargeByCode" resultType="com.erphero.vo.Charge">
+		select
+		    a.charge_code                   code,
+		    a.charge_emp_code               empCode,
+		    a.charge_date                   "date",
+    		a.charge_writer_name			writerName
+		from
+		    hero_charges a
+		where
+		    charge_code = #{code}
+	
+	</select>
+	
+	<insert id="insertCharge" parameterType="com.erphero.vo.Charge">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'CH' || to_char(sysdate, 'yy')|| lpad(HERO_CHARGE_seq.nextval,4,0) as charge_code from dual
+		</selectKey>
+		insert into hero_charges
+		(charge_code, charge_date, charge_emp_code, charge_writer_name)
+		values
+		(#{code}, #{date}, #{empCode}, #{writerName})
+	</insert>
+	
+	<update id="updateCharge" parameterType="com.erphero.vo.Charge">
+		update
+			hero_charges
+		set
+			charge_date = #{date},
+			charge_emp_code = #{empCode},
+			charge_writer_name = #{writerName},
+			charge_status = #{status},
+			charge_save_status = #{saveStatus}
+		where
+			charge_code = #{code}	
+	</update>
+	
+	
+</mapper>

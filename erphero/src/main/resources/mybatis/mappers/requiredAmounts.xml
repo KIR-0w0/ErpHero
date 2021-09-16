@@ -1,6 +1,251 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.erphero.vo.RequiredAmount">
+<mapper namespace="com.erphero.dao.RequiredAmountDao">
+	
+	<select id="searchRequiredAmounts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.RequiredAmount">
+		select 
+			d.emp_code								empCode,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+			c.target_date 							"date",
+			c.planning_code							planningCode,
+			
+			b.product_stock_unit 					productStockUnit,
+			b.PRODUCT_procure_type 					procureType,
+			b.product_type 							productType,
+				
+			b.product_lead_time 					productLeadTime,
+			((c.target_date) - b.product_lead_time) ordersDate,
+			b.product_stock 						productStock,
+			b.product_safe_stock 					productSafeStock,
+			b.product_default_amount 				productDefaultAmount,
+			c.planning_amount 						neededAmount
+		
+		from 
+			hero_products b, hero_plannings c, hero_employees d
+			
+		where 
+			b.product_code = c.planning_product_code
+			and c.planning_emp_code = d.emp_code
+			and c.planning_save_status = 'N'
+			
+			<if test="empWorkPlaceCode != null">
+				and d.emp_workplace_code = #{empWorkPlaceCode}
+			</if>
+			<if test="procureType != null">
+				and b.product_procure_type = #{procureType}
+			</if>
+			<if test="productType != null">
+				and b.product_type = #{productType}
+			</if>
+			<if test="startDate != null or endDate != null">
+				and (c.target_date >= #{startDate} and c.target_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<select id="searchSavedRequiredAmounts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.RequiredAmount">
+		select 
+			a.required_no							no,
+			a.required_orders_date					ordersDate,
+			a.required_orders_amount				ordersAmount,
+			d.emp_code								empCode,
+			c.planning_code							planningCode,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+			c.target_date 							"date",
+			
+			b.product_stock_unit 					productStockUnit,
+			b.PRODUCT_procure_type 					procureType,
+			b.product_type 							productType,
+				
+			b.product_lead_time 					productLeadTime,
+			b.product_stock 						productStock,
+			b.product_safe_stock 					productSafeStock,
+			b.product_default_amount 				productDefaultAmount,
+			c.planning_amount 						neededAmount
+		
+		from 
+			hero_required_amount a, hero_products b, hero_plannings c, hero_employees d
+			
+		where
+			a.planning_code = c.planning_code 
+			and b.product_code = c.planning_product_code
+			and c.planning_emp_code = d.emp_code
+			and a.required_status = 'Y'
+			
+			<if test="empWorkPlaceCode != null">
+				and d.emp_workplace_code = #{empWorkPlaceCode}
+			</if>
+			<if test="procureType != null">
+				and b.product_procure_type = #{procureType}
+			</if>
+			<if test="productType != null">
+				and b.product_type = #{productType}
+			</if>
+			<if test="startDate != null or endDate != null">
+				and (c.target_date >= #{startDate} and c.target_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<select id="getRequiredAmountByNo" parameterType="long" resultType="com.erphero.vo.RequiredAmount">
+		select 
+			a.required_no							no,
+			d.emp_code								empCode,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+			c.target_date 							"date",
+			c.planning_code							planningCode,
+			a.required_orders_amount 				ordersAmount,
+			b.product_stock_unit 					productStockUnit,
+			b.product_type 							productType,
+				
+			b.product_lead_time 					productLeadTime,
+			((c.target_date) - b.product_lead_time) ordersDate,
+			b.product_stock 						productStock,
+			b.product_safe_stock 					productSafeStock,
+			b.product_default_amount 				productDefaultAmount,
+			c.planning_amount 						neededAmount,
+			a.required_amount_sum					amountSum,
+			b.product_vender_code					venderCode		
+			
+		from 
+			hero_required_amount a, hero_products b, hero_plannings c, hero_employees d
+			
+		where
+			a.planning_code = c.planning_code
+			and b.product_code = c.planning_product_code
+			and a.required_emp_code = d.emp_code
+			and a.required_no = #{value}
+			
+	</select>
+	
+	<select id="getRequiredAmountsByProductCode" resultType="com.erphero.vo.RequiredAmount">
+		select 
+			a.required_no							no,
+			d.emp_code								empCode,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+			c.target_date 							"date",
+			a.required_orders_amount 				ordersAmount,
+			b.product_stock_unit 					productStockUnit,
+			b.product_type 							productType,
+			b.product_code 							productCode,
+				
+			b.product_lead_time 					productLeadTime,
+			((c.target_date) - b.product_lead_time) ordersDate,
+			b.product_stock 						productStock,
+			b.product_safe_stock 					productSafeStock,
+			b.product_default_amount 				productDefaultAmount,
+			c.planning_amount 						neededAmount,
+			a.required_amount_sum					amountSum
+			
+		from 
+			hero_required_amount a, hero_products b, hero_plannings c, hero_employees d
+			
+		where
+			a.planning_code = c.planning_code
+			and b.product_code = c.planning_product_code
+			and a.required_emp_code = d.emp_code
+			and a.required_product_code = #{productCode}
+			and a.required_status = 'Y'
+	</select>
+	
+	<select id="getAllAggregateAmount" resultType="com.erphero.vo.RequiredAmount">
+	select distinct
+			d.emp_code								empCode,
+			b.product_code 							productCode,
+			b.product_name 							productName,
+			e.req_date     							"date",
+			b.product_stock_unit 					productStockUnit,
+			b.product_procure_type 					procureType,
+			b.product_type 							productType,
+				
+			b.product_lead_time 					productLeadTime,
+			e.orders_date                           ordersDate,
+			b.product_stock 						productStock,
+			b.product_safe_stock 					productSafeStock,
+			b.product_default_amount 				productDefaultAmount,
+			e.amount_sum					        amountSum
+           
+		from 
+			hero_required_amount a, hero_products b, hero_plannings c, hero_employees d, 
+                                (select p.product_code prod_code, sum(r.required_orders_amount) amount_sum, avg(r.required_orders_amount) amount_avg, 
+                                     to_date(substr(listagg(r.required_date, ',')  within group ( order by r.required_date asc), 1,8), 'yyyy-MM-dd') req_date,
+                                     to_date(substr(listagg((r.required_date - p.product_lead_time), ',')  within group ( order by (r.required_date - p.product_lead_time) asc), 1,8), 'yyyy-MM-dd') orders_date
+                                from hero_required_amount r, hero_products p
+                                where r.required_product_code = p.product_code
+                                and r.required_status = 'Y'
+                                group by rollup (p.product_code)) e
+			
+		where
+			a.planning_code = c.planning_code
+            and a.required_product_code = e.prod_code
+			and b.product_code = c.planning_product_code
+			and a.required_emp_code = d.emp_code
+			and a.required_status = 'Y'
+			order by e.req_date
+			
+			<if test="empWorkPlaceCode != null">
+				and d.emp_workplace_code = #{empWorkPlaceCode}
+			</if>
+			<if test="procureType != null">
+				and b.product_procure_type = #{procureType}
+			</if>
+			<if test="productType != null">
+				and b.product_type = #{productType}
+			</if>
+			<if test="startDate != null or endDate != null">
+				and (c.target_date >= #{startDate} and c.target_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<insert id="insertReqAmount" parameterType="com.erphero.vo.RequiredAmount">
+		<selectKey keyProperty="no" resultType="long" order="BEFORE">
+			select HERO_REQUIRED_AMOUNT_SEQ.nextval as required_no from dual
+		</selectKey>
+		insert into hero_required_amount (
+				required_no, required_product_type, required_PROCURE_TYPE, required_date, required_orders_date, 
+				required_orders_amount, required_product_code, required_emp_code, planning_code
+			)
+			values (
+				#{no},
+				#{productType},
+				#{procureType},
+				#{date},
+				#{ordersDate},
+				#{ordersAmount},
+				#{productCode},
+				#{empCode},
+				#{planningCode}
+			) 
+	</insert>
+	
+	<update id="updateForAggregateAmount" parameterType="com.erphero.vo.RequiredAmount">
+		update 
+			hero_required_amount
+		set 
+			required_amount_sum = #{amountSum}
+		where 
+			required_PRODUCT_CODE = #{productCode}
+	</update>
+	
+	<update id="updateStatus" parameterType="com.erphero.vo.RequiredAmount">
+		update 
+			hero_required_amount
+		set 
+			required_status = #{status},
+			required_amount_sum = #{amountSum}
+		where 
+			required_no = #{no}
+	</update>
 	
 	
+	<update id="updateSaveStatus">
+		update 
+			hero_required_amount
+		set
+			required_save_status = #{saveStatus}
+		where 
+			required_no = #{no}
+	</update>
 </mapper>

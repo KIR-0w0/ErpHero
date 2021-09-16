@@ -4,7 +4,7 @@
 <mapper namespace="com.erphero.dao.EstimateDao">
 	<insert id="insertEstimate" parameterType="com.erphero.vo.Estimate">
 		<selectKey keyProperty="code" resultType="string" order="BEFORE">
-			select 'ES' || to_char(sysdate, 'yy')|| lpad(HERO_ESTIMATES_seq.nextval,4,0) as estimate_code from dual
+			select 'ES' || to_char(sysdate, 'yy')|| lpad(HERO_ESTIMATE_seq.nextval,4,0) as estimate_code from dual
 		</selectKey>
 			insert into hero_estimates
 			(estimate_code, estimate_vender_code, estimate_req_name)
@@ -15,7 +15,54 @@
 	        	from hero_venders
 	        	where vender_reg_num = #{venderCode}), #{reqName})
 	</insert>
+	<select id="getEstimateByCode" parameterType="string" resultType="com.erphero.vo.Estimate">
+		select
+			estimate_code as code,
+			estimate_date as estimateDate,
+			estimate_vender_code as venderCode,
+			estimate_mgr_code as mgrCode,
+			estimate_req_name as reqName,
+			estimate_wp_code as wpCode,
+			estimate_dept_code as deptCode,
+			estimate_save_status as saveStatus
+		from
+			hero_estimates
+		where 
+			estimate_code = #{code}
+	</select>
 	
-	
+	<select id="getAllEstimateWithProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.dto.EstimateProductDto">
+		select 
+			es.estimate_code 	as code,
+		    es.estimate_date 		as esDate,
+		    es.estimate_vender_code as venderCode,
+		    esp.ep_product_code 	as prCode,
+		    esp.ep_no 				as espNo,
+		    esp.ep_delivery_date 	as deliveryDate,
+		    esp.ep_estimate_amount 	as Amount,
+		    pr.product_name 		as prName,
+		    pr.product_stock_unit 	as stockUnit,
+		    ve.vender_name 			as venderName,
+		    pr.product_price		as price,
+		    emp.emp_code            as empCode,
+		    (select
+				emp.emp_name
+			from hero_estimates es, hero_employees emp
+			where es.estimate_mgr_code = emp.emp_code) as empName
+			
+		from 
+			hero_estimates es ,hero_estimate_products esp, hero_products pr, hero_venders ve, hero_employees emp
+		<where>
+			 <if test="startDate != null and endDate != null">
+				(es.estimate_date >= #{startDate} and es.estimate_date &lt;= #{endDate})
+			</if>
+			and es.estimate_code = esp.ep_estimate_code
+		    and esp.ep_product_code = pr.product_code
+		    and es.estimate_vender_code = ve.vender_code
+		    and es.estimate_mgr_code = emp.emp_code(+)
+		    and esp.ep_save_status = 'N'
+		</where>
+		order by code desc
+	</select>
 
 </mapper>

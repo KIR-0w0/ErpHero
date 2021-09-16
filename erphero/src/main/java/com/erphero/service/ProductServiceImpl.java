@@ -17,4 +17,14 @@ public class ProductServiceImpl implements ProductService{
 	public List<Product> getAllSellProducts() {
 		return productDao.getAllSellProducts();
 	}
+	
+	@Override
+	public void insertProduct(Product product) {
+		productDao.insertProduct(product);
+	}
+	
+	@Override
+	public Product getProductBycode(String code) {
+		return productDao.getProductByCode(code);
+	}
 }

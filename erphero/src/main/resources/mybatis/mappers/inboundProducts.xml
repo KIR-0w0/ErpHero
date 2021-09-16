@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erphero.dao.InboundProductDao">
+	
+	<select id="searchInboundProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.InboundProduct">
+		select 
+		  	c.order_code       					    orderCode,
+		    c.order_date							orderDate,
+            g.vender_name              				venderName,
+			d.op_product_code   					productCode, 
+			b.product_name 							productName,
+		    d.op_unit           					unit,
+            d.op_quantity	 						quantity,
+            d.op_delivery_date	 					deliveryDate,
+            d.op_inbound_date	 					inboundDate,
+            d.op_quantity	 						quantity,
+			c.order_emp_code						empCode,
+			e.emp_name								empName,
+            g.vender_code                           venderCode
+			
+		from
+    		hero_products b, hero_orders c, hero_order_products d, hero_employees e, hero_venders g
+    
+		where 
+			b.product_code = d.op_product_code
+		    and c.order_code = d.op_order_code
+            and c.order_vender_code = g.vender_code(+)
+		    and e.emp_code = c.order_emp_code
+		    
+		    and c.order_date is not null	
+			and c.order_save_status = 'N'
+            and c.order_status = 'Y'
+            and c.order_stage = '진행'
+            <if test="startDate != null or endDate != null">
+				and (c.order_date >= #{startDate} and c.order_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<select id="getInboundProductsByProductCode" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.InboundProduct">
+		select 
+		  	c.order_code       					    orderCode,
+		    c.order_date							orderDate,
+            g.vender_name              				venderName,
+			d.op_product_code   					productCode, 
+			b.product_name 							productName,
+		    d.op_unit           					unit,
+            d.op_quantity	 						quantity,
+            d.op_delivery_date	 					deliveryDate,
+            d.op_inbound_date	 					inboundDate,
+			c.order_emp_code						empCode,
+			e.emp_name								empName,
+            g.vender_code                           venderCode
+			
+		from
+    		hero_products b, hero_orders c, hero_order_products d, hero_employees e, hero_venders g
+    
+		where 
+			b.product_code = d.op_product_code
+		    and c.order_code = d.op_order_code
+            and c.order_vender_code = g.vender_code(+)
+		    and e.emp_code = c.order_emp_code
+		    
+		    and c.order_date is not null	
+			and c.order_save_status = 'N'
+            and c.order_status = 'Y'
+            and c.order_stage = '진행'
+            and d.order_product_code = #{productCode}
+            
+	</select>
+	<select id="searchSavedInboundProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.InboundProduct">
+		 select 
+		    a.no                         			no,
+		    a.inp_inbound_code                      inboundCode,
+		    a.inp_product_code                      productCode,
+            a.order_code                            orderCode,
+		    a.inp_unit                              unit,
+		    a.inp_amount                            amount,
+		 	a.inp_quantity                          quantity,
+            a.inp_pass_amount                       passAmount,
+            a.inp_fail_amount                       failAmount,
+		 	d.op_delivery_date 						deliveryDate,
+		 	d.op_inbound_date 						inboundDate,
+            c.inbound_date                          "date",
+            c.inbound_finish_date                   finishDate,
+            c.inbound_confirmed_date                confirmedDate,
+            c.location_no							locationNo,
+            c.inbound_status                        status,
+		    b.product_name 							productName,
+		 	b.product_price                         price
+		        
+		from 
+		    hero_inbound_products a, hero_products b, hero_inbounds c, hero_order_products d, hero_employees e
+		where 
+		    a.inp_inbound_code = c.inbound_code
+            and a.order_code = d.op_order_code
+		    and b.product_code = a.inp_product_code
+		    and c.inbound_emp_code = e.emp_code
+            and c.inbound_status = 'Y'
+			<if test="empWorkPlaceCode != null">
+				and e.emp_workplace_code = #{empWorkPlaceCode}
+			</if>
+			<if test="deptCode != null">
+				and e.emp_dept_code = #{deptCode}
+			</if>
+			<if test="empCode != null">
+				and e.emp_code = #{empCode}
+			</if>
+			<if test="startDate != null or endDate != null">
+				and (c.inbound_date >= #{startDate} and c.inbound_date &lt;= #{endDate})
+			</if>
+	</select>
+	
+	<select id="getInboundProductByInboundCode" resultType="com.erphero.vo.InboundProduct">
+		select 
+		    a.no                         			no,
+		    a.inp_inbound_code                      inboundCode,
+		    a.inp_product_code                      productCode,
+            a.order_code                            orderCode,
+		    a.inp_unit                              unit,
+		    a.inp_amount                            amount,
+		 	a.inp_quantity                          quantity,
+            a.inp_pass_amount                       passAmount,
+            a.inp_fail_amount                       failAmount,
+		 	d.op_delivery_date 						deliveryDate,
+		 	d.op_inbound_date 						inboundDate,
+            c.inbound_date                          "date",
+            c.inbound_finish_date                   finishDate,
+            c.inbound_confirmed_date                confirmedDate,
+            c.location_no							locationNo,
+            c.inbound_status                        status,
+		    b.product_name 							productName,
+		 	b.product_price                         price
+		        
+		from 
+		    hero_inbound_products a, hero_products b, hero_inbounds c, hero_order_products d, hero_employees e
+		where 
+		    a.inp_inbound_code = c.inbound_code
+            and a.order_code = d.op_order_code
+		    and b.product_code = a.inp_product_code
+		    and c.inbound_emp_code = e.emp_code
+            and c.inbound_status = 'Y'
+			and a.inp_inbound_code = #{inboundCode}
+	</select>
+	
+	<select id="getInboundProductByNo" resultType="com.erphero.vo.InboundProduct">
+		select 
+		    a.no                         			no,
+		    a.inp_inbound_code                      inboundCode,
+		    a.inp_product_code                      productCode,
+            a.order_code                            orderCode,
+		    a.inp_unit                              unit,
+		    a.inp_amount                            amount,
+		 	a.inp_quantity                          quantity,
+            a.inp_pass_amount                       passAmount,
+            a.inp_fail_amount                       failAmount,
+		 	d.op_delivery_date 						deliveryDate,
+		 	d.op_inbound_date 						inboundDate,
+            c.inbound_date                          "date",
+            c.inbound_finish_date                   finishDate,
+            c.inbound_confirmed_date                confirmedDate,
+            c.location_no							locationNo,
+            c.inbound_status                        status,
+		    b.product_name 							productName,
+		 	b.product_price                         price
+		        
+		from 
+		    hero_inbound_products a, hero_products b, hero_inbounds c, hero_order_products d, hero_employees e
+		where 
+		    a.inp_inbound_code = c.inbound_code
+            and a.order_code = d.op_order_code
+		    and b.product_code = a.inp_product_code
+		    and c.inbound_emp_code = e.emp_code
+            and c.inbound_status = 'Y'
+			and a.no = #{no}
+	</select>
+	
+	<update id="updateInboundProduct" parameterType="com.erphero.vo.InboundProduct">
+		update
+			hero_inbound_products
+		set
+			inp_pass_amount				= #{passAmount},
+			inp_fail_amount				= #{failAmount},
+			inp_amount					= #{amount}
+		where
+			no = #{no}	
+	</update>
+
+	<insert id="insertInboundProduct" parameterType="com.erphero.vo.InboundProduct">
+		<selectKey keyProperty="no" resultType="long" order="BEFORE">
+			select hero_inbound_products_seq.nextval no from dual
+		</selectKey>
+		insert into hero_inbound_products
+		(no, inp_inbound_code, inp_product_code, order_code, inp_pass_amount, inp_fail_amount, inp_quantity)
+		values
+		(#{no}, #{inboundCode}, #{productCode}, #{orderCode}, #{passAmount}, #{failAmount}, #{quantity})
+	</insert>
+	
+	<delete id="deleteInboundProductByInboundCode" parameterType="string">
+		delete from
+			hero_inbound_products
+		where
+			inp_inbound_code = #{value}
+	</delete>
+	<delete id="deleteInboundProducts" parameterType="long">
+		delete from
+			hero_inbound_products
+		where
+			no = #{value}
+	</delete>
+
+</mapper>

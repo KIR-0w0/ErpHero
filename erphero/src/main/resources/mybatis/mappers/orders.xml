@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erphero.dao.OrderDao">
+
+	<select id="searchSavedOrders" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Order" >
+		 select      
+           	distinct
+            a.order_code                   	code,
+		    a.order_emp_code               	empCode,
+		    a.order_date                   	"date",
+		    a.order_manager_code			managerCode,
+		    a.location_no					locationNo,
+		    a.order_stage					stage,
+		    a.order_vender_code				venderCode,
+           	e.emp_name                      empName,
+            m.name                          managerName,
+			f.vender_name					venderName
+				
+		from 
+			hero_orders a, hero_employees e, hero_venders f, (select 
+                                                                o.order_manager_code manager_code,
+                                                                e.emp_code emp_code,
+                                                                e.emp_name name
+                                                            from hero_orders o, hero_employees e
+                                                            where
+                                                                o.order_manager_code = e.emp_code) m
+		where 
+			a.order_emp_code = e.emp_code
+            and a.order_manager_code = m.manager_code
+            and f.vender_code = a.order_vender_code
+            and a.order_status = 'Y'
+            
+		<if test="empWorkPlaceCode != null">
+			and e.emp_workplace_code = #{empWorkPlaceCode}
+		</if>
+		<if test="deptCode != null">
+			and e.emp_dept_code = #{deptCode}
+		</if>
+		<if test="empCode != null">
+			and e.emp_code = #{empCode}
+		</if>
+		<if test="startDate != null or endDate != null">
+			and (a.order_date >= #{startDate} and a.order_date &lt;= #{endDate})
+		</if>
+		order by code desc
+	</select>
+	
+	<select id="getOrderByCode" resultType="com.erphero.vo.Order">
+		select      
+           	distinct
+            a.order_code                   	code,
+		    a.order_emp_code               	empCode,
+		    a.order_date                   	"date",
+		    a.order_manager_code			managerCode,
+		    a.location_no					locationNo,
+		    a.order_stage					stage,
+		    a.order_vender_code				venderCode,
+           	e.emp_name                      empName,
+            m.name                          managerName,
+			f.vender_name					venderName
+				
+		from 
+			hero_orders a, hero_employees e, hero_venders f, (select 
+                                                                o.order_manager_code manager_code,
+                                                                e.emp_code emp_code,
+                                                                e.emp_name name
+                                                            from hero_orders o, hero_employees e
+                                                            where
+                                                                o.order_manager_code = e.emp_code) m
+		where 
+			a.order_emp_code = e.emp_code
+            and a.order_manager_code = m.manager_code
+            and f.vender_code = a.order_vender_code
+            and a.order_status = 'Y'
+		    and order_code = #{code}
+	
+	</select>
+	
+	<select id="searchEmployee" parameterType="string" resultType="com.erphero.vo.Employee">
+		select 
+		    emp_code code,
+		    emp_name name
+		from 
+			hero_employees
+		where
+		    emp_name like '%' || #{value} || '%'
+		order by emp_code desc
+	</select>
+	
+	<insert id="insertOrder" parameterType="com.erphero.vo.Order">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'OR' || to_char(sysdate, 'yy')|| lpad(HERO_WORKPLACE_seq.nextval,4,0) as order_code from dual
+		</selectKey>
+		insert into hero_orders
+		(order_code, order_date, order_emp_code, order_manager_code, location_no, order_vender_code)
+		values
+		(#{code}, #{date}, #{empCode}, #{managerCode}, #{locationNo}, #{venderCode})
+	</insert>
+	
+	<update id="updateOrder" parameterType="com.erphero.vo.Order">
+		update
+			hero_orders
+		set
+			order_emp_code 				= #{empCode},
+			order_date 					= #{date},
+			order_status 				= #{status},
+			order_save_status 			= #{saveStatus},
+			order_manager_code			= #{managerCode},
+		    location_no					= #{locationNo},
+		    order_stage					= #{stage},
+		    order_vender_code			= #{venderCode}	
+			
+		where
+			order_code = #{code}	
+	</update>
+	
+</mapper>

@@ -14,7 +14,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-	
+		<!-- JDBC 드라이브 라이브러리 의존성 추가 
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <version>1.4.200</version>
+		</dependency>
+		-->
 		<!--자바객체와 JSON간의 상호변환을 지원하는 라이브러리 -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -133,6 +139,12 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+			<!-- 데이터베이스엑세스와 트랜잭션 처리를 지원하는 스프링 라이브러리 추가 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 	</dependencies>

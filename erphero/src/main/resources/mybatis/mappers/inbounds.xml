@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erphero.dao.InboundDao">
+
+	<select id="searchSavedInbound" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Inbound" >
+		  select      
+           	distinct
+            a.inbound_code                   	code,
+		    a.inbound_emp_code               	empCode,
+		    a.inbound_date                   	"date",
+		    a.inbound_manager_code				managerCode,
+		    a.location_no						locationNo,
+		    a.inbound_stage						stage,
+		    a.inbound_vender_code				venderCode,
+		    a.inbound_finish_date				finishDate,
+           	e.emp_name                      	empName,
+            m.name                          	managerName,
+			f.vender_name						venderName
+				
+		from 
+			hero_inbounds a, hero_employees e, hero_venders f, (select 
+	                                                                i.inbound_manager_code manager_code,
+	                                                                e.emp_code emp_code,
+	                                                                e.emp_name name
+	                                                            from hero_inbounds i, hero_employees e
+	                                                            where
+	                                                                i.inbound_manager_code = e.emp_code) m
+		where 
+			a.inbound_emp_code = e.emp_code
+            and a.inbound_manager_code = m.manager_code
+            and f.vender_code = a.inbound_vender_code
+            and a.inbound_status = 'Y'
+            
+            
+		<if test="empWorkPlaceCode != null">
+			and e.emp_workplace_code = #{empWorkPlaceCode}
+		</if>
+		<if test="deptCode != null">
+			and e.emp_dept_code = #{deptCode}
+		</if>
+		<if test="empCode != null">
+			and e.emp_code = #{empCode}
+		</if>
+		<if test="startDate != null or endDate != null">
+			and (a.order_date >= #{startDate} and a.order_date &lt;= #{endDate})
+		</if>
+		order by code desc
+	</select>
+	
+	<select id="getInboundByCode" resultType="com.erphero.vo.Inbound">
+		select      
+           	distinct
+            a.inbound_code                   	code,
+		    a.inbound_emp_code               	empCode,
+		    a.inbound_date                   	"date",
+		    a.inbound_manager_code				managerCode,
+		    a.location_no						locationNo,
+		    a.inbound_stage						stage,
+		    a.inbound_vender_code				venderCode,
+		    a.inbound_finish_date				finishDate,
+           	e.emp_name                      	empName,
+            m.name                          	managerName,
+			f.vender_name						venderName
+				
+		from 
+			hero_inbounds a, hero_employees e, hero_venders f, (select 
+	                                                                i.inbound_manager_code manager_code,
+	                                                                e.emp_code emp_code,
+	                                                                e.emp_name name
+	                                                            from hero_inbounds i, hero_employees e
+	                                                            where
+	                                                                i.inbound_manager_code = e.emp_code) m
+		where 
+			a.inbound_emp_code = e.emp_code
+            and a.inbound_manager_code = m.manager_code
+            and f.vender_code = a.inbound_vender_code
+            and a.inbound_status = 'Y'
+		    and a.inbound_code = #{code}
+	
+	</select>
+	
+	<select id="searchEmployee" parameterType="string" resultType="com.erphero.vo.Employee">
+		select 
+		    emp_code code,
+		    emp_name name
+		from 
+			hero_employees
+		where
+		    emp_name like '%' || #{value} || '%'
+		order by emp_code desc
+	</select>
+	
+	<insert id="insertInbound" parameterType="com.erphero.vo.Inbound">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'IN' || to_char(sysdate, 'yy')|| lpad(HERO_INBOUND_seq.nextval,4,0) as inbound_code from dual
+		</selectKey>
+		insert into hero_inbounds
+		(inbound_code, inbound_date, inbound_emp_code, inbound_manager_code, location_no, inbound_vender_code, inbound_finish_date)
+		values
+		(#{code}, #{date}, #{empCode}, #{managerCode}, #{locationNo}, #{venderCode}, #{finishDate})
+	</insert>
+	
+	<update id="updateInbound" parameterType="com.erphero.vo.Inbound">
+		update
+			hero_inbounds
+		set
+			inbound_date				= #{date},
+			inbound_manager_code		= #{managerCode},
+			inbound_emp_code			= #{empCode},
+			inbound_vender_code			= #{venderCode},
+			inbound_stage				= #{stage},
+			location_no					= #{locationNo},
+			inbound_status				= #{status},
+			inbound_finish_date			= #{finishDate},
+			inbound_confirmed_date		= #{confirmedDate}
+			
+		where
+			inbound_code = #{code}	
+	</update>
+	
+</mapper>

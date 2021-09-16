@@ -11,7 +11,8 @@ import com.erphero.dao.EstimateProductDao;
 import com.erphero.dao.VenderDao;
 import com.erphero.vo.Estimate;
 import com.erphero.vo.EstimateProduct;
-import com.erphero.vo.ReqEstimate;
+import com.erphero.vo.ParamEstimate;
+import com.erphero.vo.Search;
 import com.erphero.vo.Vender;
 
 
@@ -23,33 +24,33 @@ public class EstimateServiceImpl implements EstimateService{
 	@Autowired EstimateProductDao estimateProductDao;
 	
 	@Override
-	public void insertEstimate(ReqEstimate reqEstimate){
+	public void insertEstimate(ParamEstimate paramEstimate){
 
-		if(venderDao.getVenderByregNum(reqEstimate.getBusinessNumber()) == null) {
+		if(venderDao.getVenderByregNum(paramEstimate.getBusinessNumber()) == null) {
 			Vender vender = new Vender();
-			vender.setName(reqEstimate.getVenderName());
-			vender.setRegNum(reqEstimate.getBusinessNumber());
-			vender.setMail(reqEstimate.getEmail());
-			vender.setPhone(reqEstimate.getPhone());
-			venderDao.insertVender(vender);
+			vender.setName(paramEstimate.getVenderName());
+			vender.setRegNum(paramEstimate.getBusinessNumber());
+			vender.setEmail(paramEstimate.getEmail());
+			vender.setPhone(paramEstimate.getPhone());
+			venderDao.insertVenderEstimating(vender);
 			System.out.println("새로운 venderDB 생성");
 			
 			Estimate estimate = new Estimate();
-			estimate.setReqName(reqEstimate.getName());
-			estimate.setVenderCode(reqEstimate.getBusinessNumber());
+			estimate.setReqName(paramEstimate.getName());
+			estimate.setVenderCode(paramEstimate.getBusinessNumber());
 			estimateDao.insertEstimate(estimate);
 			System.out.println("새로운 EstimatesDB 생성");
 			System.out.println("############Code : " + estimate.getCode());
 			
 			
-			List<String> reqProductsCode = reqEstimate.getProductsCode();
-			List<Long> addListAmount = reqEstimate.getProductsAmount();
+			List<String> reqProductsCode = paramEstimate.getProductsCode();
+			List<Long> addListAmount = paramEstimate.getProductsAmount();
 			for(int i=0; i<reqProductsCode.size(); i++) {
 				EstimateProduct product = new EstimateProduct();
 				product.setEstimateCode(estimate.getCode());
 				product.setProductCode(reqProductsCode.get(i));
 				product.setEstimateAmount(addListAmount.get(i));
-				product.setDeliveryDate(reqEstimate.getDeliveryDate());
+				product.setDeliveryDate(paramEstimate.getDeliveryDate());
 				
 				System.out.println("savedEsProducts: " + product);
 				estimateProductDao.insertEstimateProduct(product);
@@ -58,21 +59,21 @@ public class EstimateServiceImpl implements EstimateService{
 		} else {
 			
 			Estimate estimate = new Estimate();
-			estimate.setReqName(reqEstimate.getName());
-			estimate.setVenderCode(reqEstimate.getBusinessNumber());
+			estimate.setReqName(paramEstimate.getName());
+			estimate.setVenderCode(paramEstimate.getBusinessNumber());
 			estimateDao.insertEstimate(estimate);
 			System.out.println("새로운 EstimatesDB 생성");
 			System.out.println("############Code : " + estimate.getCode());
 			
 			
-			List<String> reqProductsCode = reqEstimate.getProductsCode();
-			List<Long> addListAmount = reqEstimate.getProductsAmount();
+			List<String> reqProductsCode = paramEstimate.getProductsCode();
+			List<Long> addListAmount = paramEstimate.getProductsAmount();
 			for(int i=0; i<reqProductsCode.size(); i++) {
 				EstimateProduct product = new EstimateProduct();
 				product.setEstimateCode(estimate.getCode());
 				product.setProductCode(reqProductsCode.get(i));
 				product.setEstimateAmount(addListAmount.get(i));
-				product.setDeliveryDate(reqEstimate.getDeliveryDate());
+				product.setDeliveryDate(paramEstimate.getDeliveryDate());
 				
 				System.out.println("savedEsProducts: " + product);
 				estimateProductDao.insertEstimateProduct(product);
@@ -82,10 +83,15 @@ public class EstimateServiceImpl implements EstimateService{
 		
 	}
 	
-	
 	@Override
 	public void updateEstimate(Estimate estimate) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public List<Estimate> getAllEstimateWithProducts(Search search) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -17,7 +17,7 @@
 			<div class="col">
 				<div class="row mb-3">
 					<div class="col">
-						<div class="border p-2 bg-dark text-white fw-bold">로그인</div>
+						<div class="border p-2 bg-dark text-white fw-bold">사원 로그인</div>
 					</div>
 				</div>
 				<c:if test="${param.error eq 'deny' }">
@@ -29,11 +29,11 @@
 						</div>
 					</div>
 				</c:if>
-				<c:if test="${not empty error }">
+				<c:if test="${param.error eq 'fail' }">
 					<div class="row">
 						<div class="col">
 							<div class="alert alert-danger">
-								<strong>${error.title }</strong> ${error.message }
+								아이디 혹은 비밀번호가 올바르지 않습니다.
 							</div>
 						</div>
 					</div>
@@ -54,46 +54,6 @@
 									<button type="submit" class="btn btn-primary">로그인</button>
 								</div>
 							</form>
-						</div>
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col">
-						<div class="card border-secondary">
-							<div class="card-header">아이디 비밀번호 찾기</div>
-							<div class="card-body">
-								<p class="card-text">아이디 찾기</p>	
-								<form>
-									<div class="row g-3">
-  										<div class="col-5">
-											<input type="text" class="form-control" name="userName" placeholder="이름을 입력하세요" aria-label="이름">
-										</div>
-										<div class="col-5">
-											<input type="text" class="form-control" name="userEmail" placeholder="이메일을 입력하세요" aria-label="이메일">
-										</div>
-										<div class="col">
-											<button type="submit" class="btn btn-outline-primary">조회</button>
-										</div>
-									</div>
-								</form>
-							</div>
-							<div class="card-body">
-								<p class="card-text">비밀번호 찾기</p>	
-								<p class="card-text">입력된 이메일로 새 비밀번호를 발송해드립니다.</p>	
-								<form>
-									<div class="row g-3">
-  										<div class="col-5">
-											<input type="text" class="form-control" name="userId" placeholder="이름을 입력하세요" aria-label="아이디">
-										</div>
-										<div class="col-5">
-											<input type="text" class="form-control" name="userEmail" placeholder="이메일을 입력하세요" aria-label="이메일">
-										</div>
-										<div class="col">
-											<button type="submit" class="btn btn-outline-primary">조회</button>
-										</div>
-									</div>
-								</form>
-							</div>
 						</div>
 					</div>
 				</div>

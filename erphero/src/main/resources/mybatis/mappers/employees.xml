@@ -18,7 +18,84 @@
 			emp_workplace_code		as workplaceCode
 			
 		from hero_employees
-		where emp_id = #{value}
+		where emp_id = #{id}
+	</select>
+	
+	<select id="getEmployeeByCode" parameterType="string" resultType="com.erphero.vo.Employee">
+		select
+			emp_code				as code,
+			emp_id					as id,
+			emp_name				as name,
+			emp_dept_code			as deptCode,
+			emp_hire_date			as hireDate,
+			emp_resignation_date	as resignationDate,
+			emp_status				as status,
+			emp_email				as email,
+			emp_phone				as phone,
+			emp_password			as password,
+			emp_job_id				as jobId,
+			emp_workplace_code		as workplaceCode
+			
+		from hero_employees
+		where emp_code = #{value}
 			
 	</select>
+	<select id="getAllEmployees" resultType="com.erphero.vo.Employee">
+		select
+			emp_code				as code,
+			emp_id					as id,
+			emp_name				as name,
+			emp_dept_code			as deptCode,
+			emp_hire_date			as hireDate,
+			emp_resignation_date	as resignationDate,
+			emp_status				as status,
+			emp_email				as email,
+			emp_phone				as phone,
+			emp_password			as password,
+			emp_job_id				as jobId,
+			emp_workplace_code		as workplaceCode
+			
+		from hero_employees
+	</select>
+	
+	<insert id="insertEmployee" parameterType="com.erphero.vo.Employee">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'EP' || to_char(sysdate, 'yy')|| lpad(HERO_EMPLOYEE_seq.nextval,4,0) as emp_code from dual
+		</selectKey>
+		insert into hero_employees
+		( emp_code, emp_id, emp_name, emp_dept_code, emp_resignation_date, emp_status, emp_email, emp_phone, emp_password, 
+		  emp_job_id, emp_workplace_code
+		)
+		values
+		(			
+			#{code}, #{id}, #{name}, #{deptCode}, #{resignationDate}, #{status}, #{email}, #{phone}, #{password},
+			#{jobId}, #{workplaceCode}
+		)
+	</insert>
+	
+	<update id="updateEmployee" parameterType="com.erphero.vo.Employee">
+		update 
+			hero_employees
+		set	
+			emp_id					= #{id},
+			emp_name				= #{name},
+			emp_dept_code			= #{deptCode},
+			emp_hire_date			= #{hireDate},
+			emp_resignation_date	= #{resignationDate},
+			emp_status				= #{status},
+			emp_email				= #{email},
+			emp_phone				= #{phone},
+			emp_password			= #{password},
+			emp_job_id				= #{jobId},
+			emp_workplace_code		= #{workplaceCode}
+		where
+			emp_code = #{code}
+	</update>
+	<delete id="deleteEmployeeByCode" parameterType="string">
+		delete from 
+					 hero_employees
+		where 
+				emp_code = #{value}
+	</delete>
+	
 </mapper>

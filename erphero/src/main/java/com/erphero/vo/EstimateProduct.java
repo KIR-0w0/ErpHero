@@ -18,4 +18,5 @@ public class EstimateProduct {
 	private long 	estimateAmount;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	deliveryDate;
+	private String	saveStatus;
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.erphero.dao.CategoryDao">
+
+	<insert id="insertCategory" parameterType="com.erphero.vo.Category">
+	<selectKey keyProperty="code" resultType="string" order="BEFORE">
+		select 'PC' || to_char(sysdate, 'yy')|| lpad(HERO_PROD_CATEGORY_seq.nextval,4,0) as product_category from dual
+	</selectKey>
+	insert into hero_product_categories
+		(product_category_code, product_category_name)
+	values
+		(#{code}, #{name})
+	</insert>
+	
+	<select id="getAllCategory" resultType="com.erphero.vo.Category">
+		select 
+			product_category_code as code,
+			product_category_name as name
+		from 
+			hero_product_categories
+	</select>
+	
+	<select id="getCategryBycode" parameterType="string" resultType="com.erphero.vo.Category">
+		select 
+			product_category_code as code,
+			product_category_name as name
+		from 
+			hero_product_categories
+		where
+			product_category_code = #{values}
+	</select>
+	
+	<delete id="deleteCategory" parameterType="string">
+		delete from hero_
+	</delete>
+</mapper>

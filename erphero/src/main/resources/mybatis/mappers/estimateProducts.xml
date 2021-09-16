@@ -11,4 +11,24 @@
 		values
 		(#{no}, #{estimateCode}, #{productCode}, #{estimateAmount}, #{deliveryDate})
 	</insert>
+	
+	<select id="getEstimateProductByNo" parameterType="long" resultType="com.erphero.vo.EstimateProduct">
+		select
+			ep_no as no,
+			ep_estimate_code as estimateCode,
+			ep_product_code as productCode,
+			ep_estimate_amount as estimateAmount,
+			ep_save_status as saveStatus
+		from hero_estimate_products
+		where ep_no = #{no}
+	</select>
+	
+	<update id="updateEstimateProductStatus" parameterType="com.erphero.vo.EstimateProduct">
+		update
+			hero_estimate_products
+		set
+			ep_save_status = #{saveStatus}			
+		where
+			ep_no = #{no}	
+	</update>
 </mapper>

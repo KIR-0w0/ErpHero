@@ -8,7 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.erphero.web.annotaion.LoginedEmp;
+import com.erphero.web.annotation.LoginedEmp;
 import com.erphero.web.utils.SessionUtils;
 
 public class LoginedEmpArgumentResolver implements HandlerMethodArgumentResolver{

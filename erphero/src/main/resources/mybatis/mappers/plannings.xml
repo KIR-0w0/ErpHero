@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.erphero.dao.PlanningDao">
-<!-- 
-	<select id="getAllPlannings" parameterType="string" resultType="com.erphero.vo.Planning">
+
+	<select id="searchPlannings" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Planning">
 		select
 			a.target_date 			targetDate,
 			b.product_code			productCode,
@@ -11,12 +11,20 @@
 			c.cp_delivery_date		cpDeliveryDate,
 			c.cp_ship_date			cpShipDate,
 			c.cp_contract_amount	cpContractAmount,
-			d.vender_name			venderName
+			d.vender_name			venderName,
+			a.planning_code			code,
+            f.contract_emp_code     empCode
 		from 
-			hero_plannings a, hero_products b, hero_contract_products c, hero_venders d, hero_employees e
-		<where>
-			<if test="workPlace != null">
-				e.emp_workplace_code = #{empWorkPlaceCode}
+			hero_plannings a, hero_products b, hero_contract_products c, hero_venders d, hero_employees e, hero_contracts f
+		where
+			a.contract_product_no = c.no
+			and b.product_code = c.cp_product_code
+			and b.product_vender_code = d.vender_code
+            and f.contract_emp_code = e.emp_code
+            and f.contract_code = c.cp_contract_code
+			
+			<if test="empWorkPlaceCode != null">
+				and e.emp_workplace_code = #{empWorkPlaceCode}
 			</if>
 			<if test="deptCode != null">
 				and e.emp_dept_code = #{deptCode}
@@ -24,19 +32,38 @@
 			<if test="empCode != null">
 				and e.emp_code = #{empCode}
 			</if>
-			<if test="startDate != null and endDate != null">
+			<if test="startDate != null or endDate != null">
 				and (a.target_date >= #{startDate} and a.target_date &lt;= #{endDate})
 			</if>
-			and a.contract_code = c.cp_contract_code
+			order by a.target_date desc
+	</select>
+
+	
+	<select id="getPlannningByCode" resultType="com.erphero.vo.Planning">
+		select
+			a.target_date 			targetDate,
+			b.product_code			productCode,
+			b.product_name			productName,
+			b.product_stock_unit	productStockUnit,
+			c.cp_delivery_date		cpDeliveryDate,
+			c.cp_ship_date			cpShipDate,
+			c.cp_contract_amount	cpContractAmount,
+			d.vender_name			venderName,
+			c.no					contractProductNo
+		from 
+			hero_plannings a, hero_products b, hero_contract_products c, hero_venders d, hero_employees e
+		where
+			a.contract_product_no = c.no
 			and b.product_code = c.cp_product_code
 			and b.product_vender_code = d.vender_code
 			and a.planning_emp_code = e.emp_code
-		</where>
-			order by b.product_name
+			and a.planning_code = #{code}
+		
+	
+			order by a.target_date desc
 	</select>
 	
-	
-	<select id="getAllContracts" resultType="com.erphero.dto.Contract">
+	<select id="searchContracts" parameterType="com.erphero.vo.Search" resultType="com.erphero.dto.Contract">
 		select 
 			b.contract_code code,
 			b.contract_date "date",
@@ -45,42 +72,48 @@
 			e.product_name productName,
 			e.product_stock_unit stockUnit,
 			c.cp_contract_amount cpContractAmount,
-			c.cp_ship_date cpShipDate
+			c.cp_ship_date cpShipDate,
+			c.cp_delivery_date cpDeliveryDate,
+			c.no contractProductNo,
+			b.contract_emp_code empCode
+			
 		
 		from 
-			hero_plannings a, hero_contracts b, hero_contract_products c, hero_venders d, hero_products e
-		where 
-			a.contract_code = b.contract_code
-			and b.contract_code = c.cp_contract_code
-			and b.contract_vender_code = d.vender_code
-			and e.product_code = c.cp_product_code
-	</select>
-	
-	<select id="getPlanningByContractCode" parameterType="string" resultType="com.erphero.vo.Planning">
-		select
-			a.target_date 			targetDate,
-			b.product_code			productCode,
-			b.product_name			productName,
-			b.product_stock_unit	productStockUnit,
-			c.cp_delivery_date		cpDeliveryDate,
-			c.cp_ship_date			cpShipDate,
-			c.cp_contract_amount	cpContractAmount,
-			d.vender_name			venderName
-		from 
-			hero_plannings a, hero_products b, hero_contract_products c, hero_venders d
-		where			
-			and a.contract_code = c.cp_contract_code
-			and b.product_code = c.cp_product_code
-			and b.product_vender_code = d.vender_code
-			a.contract_code = #{value}
-		order by b.product_name
+			hero_contracts b, hero_contract_products c, hero_venders d, hero_products e
+		where
+			b.contract_code = c.cp_contract_code
+			and b.contract_vender_code = d.vender_code(+)
+			and e.product_code = c.cp_product_code			
+			and c.cp_save_status = 'N'
+			<if test="startDate != null or endDate != null">
+				and (b.contract_date >= #{startDate} and b.contract_date &lt;= #{endDate})
+			</if> 
+		order by  b.contract_code
 	</select>
 	
 	<insert id="insertPlanning" parameterType="com.erphero.vo.Planning">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'PL' || to_char(sysdate, 'yy')|| lpad(HERO_PLANNING_seq.nextval,4,0) as planning_code from dual
+		</selectKey>
 		insert into hero_plannings
-		(planning_code, contract_code, planning_emp_code, target_date, planning_product_code, planning_amount)
+		(planning_code, planning_emp_code, target_date, planning_product_code, planning_amount, contract_product_no)
 		values
-		(#{code}, #{contractCode}, #{empCode}, #{targetDate}, #{productCode}, #{amount})
+		(#{code}, #{empCode}, #{targetDate}, #{productCode}, #{cpContractAmount}, #{contractProductNo})
 	</insert>
- -->
+
+	<delete id="deletePlanningByCode" parameterType="string">
+		delete from 
+					 hero_plannings
+		where 
+				planning_code = #{value}
+	</delete>
+	
+	<update id="updateSaveStatus">
+		update 
+			hero_plannings
+		set
+			planning_save_status = #{saveStatus}
+		where 
+			planning_code = #{code}
+	</update>
 </mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+ <mapper namespace="com.erphero.dao.WorkPlaceDao">
+
+	<resultMap id="WorkPlace" type="com.erphero.vo.WorkPlace">
+		<id column="workplace_code" property="code"/>
+		<result column="workplace_name" property="name"/>
+		<result column="workplace_type" property="type"/>
+		<result column="workplace_reg_num" property="regNum"/>
+		<result column="workplace_rep_name" property="repName"/>
+		<result column="workplace_business_type" property="businessType"/>
+		<result column="workplace_business_category" property="businessCategory"/>
+		<result column="workplace_address" property="address"/>
+		<result column="workplace_phone" property="phone"/>
+		<result column="wp_created_date" property="createdDate"/>
+		<result column="wp_deleted_date" property="deletedDate"/>
+	</resultMap>
+	
+	<insert id="insertWorkPlace" parameterType="com.erphero.vo.WorkPlace">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select 'WP' || to_char(sysdate, 'yy')|| lpad(HERO_WORKPLACE_seq.nextval,4,0) as workplace_code from dual
+		</selectKey>
+		insert into hero_workplaces
+		(	workplace_code,	workplace_name,	workplace_type,	workplace_reg_num, workplace_rep_name,
+			workplace_business_type, workplace_business_category, workplace_address, workplace_phone,
+			wp_created_date, wp_deleted_date
+		)
+		values
+		(			
+			#{code}, #{name}, #{type}, #{regNum}, #{repName}, #{businessType}, #{businessCategory},
+			#{address}, #{phone}, #{createdDate}, #{deletedDate}
+		)
+	</insert>
+	
+	<update id="updateWorkPlace" parameterType="com.erphero.vo.WorkPlace">
+		update 
+			hero_workplaces
+		set	
+			workplace_name = #{name},
+			workplace_type = #{type},
+			workplace_reg_num = #{regNum},
+			workplace_rep_name = #{repName},
+			workplace_business_type = #{businessType},
+			workplace_business_category = #{businessCategory},
+			workplace_address = #{address},
+			workplace_phone = #{phone},
+			wp_created_date = #{createdDate},
+			wp_deleted_date	= #{deletedDate}	
+		where
+			workplace_code = #{code}
+	</update>
+	
+	<select id="getWorkPlaceByCode" parameterType="string" resultMap="WorkPlace">
+		select
+			*
+		from 
+			hero_workplaces
+		where
+			workplace_code = #{code}
+	</select>
+	<select id="getAllWorkPlaces" resultMap="WorkPlace">
+		select
+			*
+		from 
+			hero_workplaces
+	</select>
+	<delete id="deleteWorkPlaceByCode" parameterType="string">
+		delete from 
+					 hero_workplaces
+		where 
+				workplace_code = #{value}
+	</delete>
+	
+</mapper>

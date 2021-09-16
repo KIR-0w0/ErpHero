@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+ <mapper namespace="com.erphero.dao.DepartmentDao">
+
+	<resultMap id="Department" type="com.erphero.vo.Department">
+		<id column="dept_code" property="code"/>
+		<result column="dept_name" property="name"/>
+		<result column="dept_workplace_code" property="workPlaceCode"/>
+		<result column="dept_created_date" property="createdDate"/>
+		<result column="dept_deleted_date" property="deletedDate"/>
+	</resultMap>
+	
+	<insert id="insertDepartment" parameterType="com.erphero.vo.Department">
+		<selectKey keyProperty="code" resultType="string" order="BEFORE">
+			select HERO_department_SEQ.nextval as dept_code from dual
+		</selectKey>
+		insert into hero_departments
+		( dept_code, dept_name, dept_workplace_code, dept_deleted_date )
+		values
+		(			
+			#{code}, #{name}, #{workPlaceCode}, #{deletedDate}
+		)
+	</insert>
+	
+	<update id="updateDepartment" parameterType="com.erphero.vo.Department">
+		update 
+			hero_departments
+		set	
+			dept_name = #{name},
+			dept_workplace_code = #{workPlaceCode},
+			dept_deleted_date	= #{deletedDate}	
+
+		where
+			dept_code = #{code}
+	</update>
+	
+	<select id="getDepartmentByCode" parameterType="string" resultMap="Department">
+		select
+			*
+		from 
+			hero_departments
+		where
+			dept_code = #{code}
+	</select>
+	<select id="getAllDepartments" resultMap="Department">
+		select
+			*
+		from 
+			hero_departments
+		order by dept_code	
+	</select>
+	<delete id="deleteDepartmentByCode" parameterType="string">
+		delete from 
+					 hero_departments
+		where 
+				dept_code = #{value}
+	</delete>
+</mapper>

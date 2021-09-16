@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.erphero.dao.DashboardDao">
+	
+	<select id="calculateInboundsByDays" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select cal."date" "date", NVL(inb.cnt, 0) cnt, NVL(inp.quantity, 0) quantity
+		from 
+		        (select      
+				    to_char(inbound_date)            	"date",
+		            inbound_code                        code,
+		            count(*)                            cnt
+				from 
+					hero_inbounds
+				where 
+					     inbound_status = 'Y'
+		        group by inbound_date, inbound_code
+		            
+		        ) inb, 
+		        (select      
+				    to_char(inp_inbound_code)            	"date",
+		            inp_inbound_code                        inboundCode,
+		            inp_quantity                            quantity 
+				from 
+					hero_inbound_products
+		        ) inp,
+		        
+		        (select to_char(trunc(#{startDate}, 'mm') + level -1, 'yy/mm/dd') "date"
+		         from dual
+		         connect by level &lt;= ceil(last_day(#{startDate}) - trunc(#{startDate}, 'mm'))) cal
+		
+		where 
+			inb."date" (+) = cal."date"
+			and inb.code = inp.inboundCode(+)
+		order by "date"
+		
+	</select>
+
+	<select id="calculateOrdersByDays" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select cal."date" "date", NVL(o.cnt, 0) cnt, NVL(op.quantity, 0) quantity
+		from 
+		        (select      
+				    to_char(order_date)            	"date",
+		            order_code                      code,
+		            count(*)                        cnt
+				from 
+					hero_orders
+				where 
+					     order_status = 'Y'
+		        group by order_date, order_code
+		            
+		        ) o, 
+		        (select      
+				    to_char(op_order_code)            	"date",
+		            op_order_code                       orderCode,
+		            op_quantity                         quantity 
+				from 
+					hero_order_products
+		        ) op,
+		        
+		        (select to_char(trunc(#{startDate}, 'mm') + level -1, 'yy/mm/dd') "date"
+		         from dual
+		         connect by level &lt;= ceil(last_day(#{startDate}) - trunc(#{startDate}, 'mm'))) cal
+		
+		where 
+			o."date" (+) = cal."date"
+			and o.code = op.orderCode(+)
+		order by "date"
+	</select>
+	
+	<select id="calculateInboundsByMonths" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		 select to_char(b.dt, 'YY/MM') "date", nvl(sum(inb.cnt), 0) cnt, NVL(sum(inp.quantity), 0) quantity
+		 from (select      
+				    to_char(inbound_date, 'yyyy-mm-dd') "date",
+		            inbound_code                        code,
+		            count(*)                            cnt
+				from 
+					hero_inbounds
+				where 
+					     inbound_status = 'Y'
+		        group by inbound_date, inbound_code) inb, 
+		        (select      
+		            inp_inbound_code                        inboundCode,
+		            inp_quantity                            quantity 
+				from 
+					hero_inbound_products) inp,
+		      (select (to_date(to_char(#{startDate}, 'yyyy-mm-dd'), 'yyyy-mm-dd') + level - 1) as dt
+		         from dual 
+		         connect by level &lt;= (to_date(to_char(#{endDate},'yyyy-mm-dd') , 'yyyy-mm-dd') 
+		                            	- to_date(to_char(#{startDate}, 'yyyy-mm-dd') ,'yyyy-mm-dd') +1)) b
+		 where 
+		 	b.dt = inb."date"(+)
+		  	and inb.code = inp.inboundCode(+)
+		 group by to_char(b.dt, 'YY/MM')
+		 order by to_char(b.dt, 'YY/MM')
+	</select>
+	<select id="calculateOrdersByMonths" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		  select to_char(b.dt, 'YY/MM') "date", nvl(sum(o.cnt), 0) cnt, NVL(sum(op.quantity), 0) quantity
+		  from (select      
+				    to_char(order_date, 'yyyy-mm-dd') 	"date",
+		            order_code                        	code,
+		            count(*)                            cnt
+				from 
+					hero_orders
+				where 
+					     order_status = 'Y'
+		        group by order_date, order_code
+		            
+		        ) o, 
+		        (select      
+		            op_order_code                        orderCode,
+		            op_quantity                          quantity 
+				from 
+					hero_order_products
+		        ) op,
+		      (select (to_date(to_char(#{startDate}, 'yyyy-mm-dd'), 'yyyy-mm-dd') + level - 1) as dt
+		         from dual 
+		         connect by level &lt;= (to_date(to_char(#{endDate},'yyyy-mm-dd') , 'yyyy-mm-dd') 
+		                            	- to_date(to_char(#{startDate}, 'yyyy-mm-dd') ,'yyyy-mm-dd') +1)) b
+		  where b.dt = o."date"(+)
+		  and o.code = op.orderCode(+)
+		  group by to_char(b.dt, 'YY/MM')
+		  order by to_char(b.dt, 'YY/MM')
+	</select>
+	<select id="calculateInboundsByYears" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		  select to_char(b.dt, 'YYYY') as "date"
+		     , nvl(sum(inb.cnt), 0) cnt, NVL(sum(inp.quantity), 0) quantity
+		  from (select      
+				    to_char(inbound_date)            	"date",
+		            inbound_code                        code,
+		            count(*)                            cnt
+				from 
+					hero_inbounds
+				where 
+					     inbound_status = 'Y'
+		        group by inbound_date, inbound_code
+		            
+		        ) inb, 
+		        (select      
+				    to_char(inp_inbound_code)            	"date",
+		            inp_inbound_code                        inboundCode,
+		            inp_quantity                            quantity 
+				from 
+					hero_inbound_products
+		        ) inp,
+		       (select (to_date(to_char(#{startDate}, 'yyyy-mm-dd'), 'yyyy-mm-dd') + level - 1) as dt
+		         from dual 
+		         connect by level &lt;= (to_date(to_char(#{endDate},'yyyy-mm-dd') , 'yyyy-mm-dd') 
+		                            	- to_date(to_char(#{startDate}, 'yyyy-mm-dd') ,'yyyy-mm-dd') +1)) b
+		  where b.dt = inb."date"(+)
+		  and inb.code = inp.inboundCode(+)
+		  group by to_char(b.dt, 'YYYY')
+		  order by to_char(b.dt, 'YYYY')
+	</select>
+	<select id="calculateOrdersByYears" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		 select to_char(b.dt, 'YYYY') as "date"
+		     , nvl(sum(o.cnt), 0) cnt, NVL(sum(op.quantity), 0) quantity
+		  from (select      
+				    to_char(order_date)            		"date",
+		            order_code                        	code,
+		            count(*)                            cnt
+				from 
+					hero_orders
+				where 
+					     order_status = 'Y'
+		        group by order_date, order_code
+		            
+		        ) o, 
+		        (select      
+				    to_char(op_order_code)            		"date",
+		            op_order_code                        	orderCode,
+		            op_quantity                            	quantity 
+				from 
+					hero_order_products
+		        ) op,
+				(select (to_date(to_char(#{startDate}, 'yyyy-mm-dd'), 'yyyy-mm-dd') + level - 1) as dt
+		         from dual 
+		         connect by level &lt;= (to_date(to_char(#{endDate},'yyyy-mm-dd') , 'yyyy-mm-dd') 
+		                            	- to_date(to_char(#{startDate}, 'yyyy-mm-dd') ,'yyyy-mm-dd') +1)) b
+		  where b.dt = o."date"(+)
+		  and o.code = op.orderCode(+)
+		  group by to_char(b.dt, 'YYYY')
+		  order by to_char(b.dt, 'YYYY')
+	</select>
+	<select id="calculateProductsByCategories" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select a.category, b.product_category_name categoryName, a.totalStock
+		from
+		        (select product_category_code category, sum(product_stock) totalStock
+		        from hero_products 
+		        group by rollup(PRODUCT_CATEGORY_CODE)
+		        order by totalStock desc) a, hero_product_categories b
+		where 
+				a.category(+) = b.product_category_code
+	</select>
+	<select id="calculateProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select
+		    inb.inbound_date "date",
+		    sum(inp.inp_pass_amount) passAmount, 
+		    sum(inp.inp_fail_amount) failAmount
+		from 
+			hero_inbound_products inp,  hero_inbounds inb
+		where
+		    inb.inbound_code = inp.inp_inbound_code
+		group by  
+			inb.inbound_date
+	</select>
+	<select id="calculateInboundProducts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select
+		
+            to_date(substr(listagg(inb.inbound_date, ',')  within group ( order by inb.inbound_date desc), 1,8), 'yyyy-MM-dd') "date",
+            sum(inp.inp_pass_amount) passAmount, 
+		    sum(inp.inp_fail_amount) failAmount,
+		   
+            round(avg(NVL(inp.inp_pass_amount / DECODE((inp.inp_pass_amount+inp.inp_fail_amount), 0, null, (inp.inp_pass_amount+inp.inp_fail_amount)), 0)), 3)*100 passRate,
+		    round(avg(NVL(inp.inp_fail_amount / DECODE((inp.inp_pass_amount+inp.inp_fail_amount), 0, null, (inp.inp_pass_amount+inp.inp_fail_amount)), 0)), 3)*100 failRate
+		    
+		from hero_inbound_products inp, hero_inbounds inb
+		where
+		    inb.inbound_code = inp.inp_inbound_code
+	</select>
+	<select id="calculateOrderLocations" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select l.location_name locationName, sum(round(op_sum/p.product_price)) quantity
+		from hero_orders o, hero_order_products op, hero_locations l, hero_products p
+		where
+		o.order_code = op.op_order_code
+		and o.location_no = l.no
+		and p.product_code = op.op_product_code
+		group by l.location_name
+	</select>
+	<select id="calculateOrderProductsSum" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select l.location_name locationName, sum(op.op_sum) price
+		from hero_orders o, hero_order_products op, hero_locations l, hero_products p
+		where
+		o.order_code = op.op_order_code
+		and o.location_no = l.no
+		and p.product_code = op.op_product_code
+		group by l.location_name
+	</select>
+	<select id="calculateunpaidOrderAmounts" parameterType="com.erphero.vo.Search" resultType="com.erphero.vo.Dashboard">
+		select round(NVL(a.cnt / DECODE((a.cnt+b.cnt), 0, null, (a.cnt+b.cnt)), 0), 3)*100  failRate, a.cnt failAmount, b.cnt passAmount
+		from
+		(select count(order_stage )cnt, order_stage, order_status
+		from 
+		    hero_orders
+		where order_stage = '진행'
+		and order_status ='Y'
+		group by order_stage, order_status) a,
+		(select count(order_stage )cnt, order_stage, order_status
+		from 
+		    hero_orders
+		where order_stage = '마감'
+		and order_status ='Y'
+		group by order_stage, order_status) b
+		where a.order_status = b.order_status
+	</select>
+</mapper>
